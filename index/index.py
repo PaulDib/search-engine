@@ -56,13 +56,17 @@ class DocumentIndex:
     def getFieldPositions(self, content):
         self.fieldPositions = {}
         for field in self.fields:
-            self.fieldPositions[field] = next((i for (i, x) in content if x == field), -1)
+            self.fieldPositions[field] = next((i for i, l in enumerate(content) if l.startswith(field)), -1)
+
 
     def createIndex(self, content):
-        for field in fields:
+        for field in self.fields:
             fieldContent = self.getFieldContent(field, content)
 
     def getFieldContent(self, field, documentContent):
         startPos = self.fieldPositions[field] + 1
-        stopPos = min({k:v for (k,v) in self.fieldPositions.iteritems() if v > startPos})
-        return content[startPos:stopPos].join()
+        if (startPos <= 0):
+            return ""
+        lis = {v for (k,v) in self.fieldPositions.iteritems() if v > startPos}
+        stopPos = min(lis) if lis else len(documentContent)
+        return "\n".join(documentContent[startPos:stopPos])
