@@ -11,12 +11,12 @@ class Index:
         self._initInvertedIndex()
 
     def _initInvertedIndex(self):
-        self.invertedIndex = {}
+        self._invertedIndex = {}
         for docId in self._documentLocations:
             docIndex = DocumentIndex(self._getDocumentContent(docId), self._config)
             wordCount = docIndex.getWordCount()
             invertedWords = { word: [docId] for word in wordCount if wordCount[word] > 0 }
-            self.invertedIndex = mergeDictionaries(self.invertedIndex, invertedWords)
+            self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _locateDocuments(self):
         '''Populating a dictionary locating each document in the different data files.'''
