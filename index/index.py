@@ -15,7 +15,7 @@ class Index:
         for docId in self._documentLocations:
             docIndex = DocumentIndex(self._getDocumentContent(docId), self._config)
             wordCount = docIndex.getWordCount()
-            invertedWords = { word: [docId] for word in wordCount if wordCount[word] > 0 }
+            invertedWords = { word: [{'docId': docId, 'count': wordCount[word]}] for word in wordCount if wordCount[word] > 0 }
             self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _locateDocuments(self):

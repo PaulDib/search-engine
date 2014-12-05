@@ -2,7 +2,7 @@ class IndexConfig:
     '''Class containing the configuration items for the index'''
     def __init__(self, stopWordFile = ""):
         if stopWordFile:
-            readStopWords(stopWordFile)
+            self.readStopWords(stopWordFile)
         else:
             self.stopWords = []
         self.fields = [".I", ".T", ".W", ".K", ".B", ".A", ".N", ".X",".K"]
@@ -11,4 +11,4 @@ class IndexConfig:
 
     def readStopWords(self, stopWordFile):
         with open(stopWordFile) as file:
-            self.stopWords = file.readlines()
+            self.stopWords = file.read().splitlines()
