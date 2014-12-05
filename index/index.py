@@ -1,5 +1,6 @@
 from document_index import DocumentIndex
 from utility import mergeDictionaries
+import pickle
 
 class Index:
     '''Class containing the whole index: documents and the lists of frequencies'''
@@ -9,6 +10,13 @@ class Index:
         self._documentLocations = {}
         self._locateDocuments()
         self._initInvertedIndex()
+
+    def writeToFile(self, file):
+        pickle.dump(self, file)
+
+    @staticmethod
+    def readIndexFromFile(file):
+        return None
 
     def _initInvertedIndex(self):
         self._invertedIndex = {}
