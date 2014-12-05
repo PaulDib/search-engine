@@ -1,12 +1,15 @@
-import re
+from utility import *
 
 class DocumentIndex:
-    '''Class containing the indexing result for one document'''
+    '''Class containing the indexing result for one document.'''
     def __init__(self, content, indexConfig):
-        self.__config = indexConfig
+        self._config = indexConfig
         self.wordCount = {}
-        self.__getFieldPositions(content)
-        self.__createIndex(content)
+        self._getFieldPositions(content)
+        self._initIndex(content)
+
+    def getWordCount(self):
+        return self.wordCount
 
     def getFieldContent(self, field, documentContent):
         startPos = self.fieldPositions[field] + 1
@@ -17,54 +20,21 @@ class DocumentIndex:
         return "\n".join(documentContent[startPos:stopPos])
 
 
-    def __getFieldPositions(self, content):
+    def _getFieldPositions(self, content):
         '''Populates fieldPositions = { 'fieldName': startPosition } dictionary.'''
         self.fieldPositions = {}
-        for field in self.__config.fields:
+        for field in self._config.fields:
             self.fieldPositions[field] = next((i for i, l in enumerate(content) if l.startswith(field)), -1)
 
-    def __createIndex(self, content):
-        for field in self.__config.focusFields:
-            self.wordCount = DocumentIndex.mergeDictionaries(self.wordCount, self.__getWordCount(field, content))
+    def _initIndex(self, content):
+        for field in self._config.focusFields:
+            self.wordCount = mergeDictionaries(self.wordCount, self._getWordCount(field, content))
 
-    def __getWordCount(self, field, content):
+    def _getWordCount(self, field, content):
         fieldContent = self.getFieldContent(field, content)
-        return DocumentIndex.countTokens(self.__tokenize(fieldContent))
+        return countTokens(self._tokenize(fieldContent))
 
-    def __tokenize(self, content):
-        tokens = self.getWordList(content)
-        tokens = DocumentIndex.filterWords(tokens, self.__config.stopWords)
+    def _tokenize(self, content):
+        tokens = getWordList(content)
+        tokens = filterWords(tokens, self._config.stopWords)
         return tokens
-
-    @staticmethod
-    def filterWords(wordList, stopWords):
-        return [x for x in wordList if x not in stopWords]
-
-    @staticmethod
-    def splitContent(content):
-        '''Splits a string around spaces and non-alphanumeric characters'''
-        return re.findall(r"[\w]+", content)
-
-    @staticmethod
-    def mergeDictionaries(a, b):
-        '''Merge two dictionaries by summing values'''
-        res = a
-        for k in b:
-            if k in res:
-                res[k] = res[k] + b[k]
-            else:
-                res[k] = b[k]
-        return res
-
-    @staticmethod
-    def getWordList(content):
-        '''Gets the list of words in a string'''
-        wordList = DocumentIndex.splitContent(content)
-        wordList = [x.lower() for x in wordList]
-        return wordList
-
-    @staticmethod
-    def countTokens(tokens):
-        '''Given a list of elements, counts the number of occurences of each element as a dictionary.'''
-        tokens = map(lambda x: { x: 1 }, tokens)
-        return reduce(DocumentIndex.mergeDictionaries, tokens, {})
