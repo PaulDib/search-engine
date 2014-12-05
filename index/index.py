@@ -1,12 +1,14 @@
 class Index:
-    """Class containing the whole index: documents and the lists of frequencies"""
-    def __init__(self, dataFiles):
+    '''Class containing the whole index: documents and the lists of frequencies'''
+    def __init__(self, dataFiles, indexConfig):
+        self.config = indexConfig
         self.dataFiles = dataFiles
         self.documentLocations = {}
-        self.idMarker = ".I"
         self.locateDocuments()
+        self.createInvertedIndex()
 
     def locateDocuments(self):
+        '''Populating a dictionary locating each document in the different data files.'''
         if isinstance(self.dataFiles, str):
             self.readDocIdsInFile(self.dataFiles)
         elif  type(self.dataFiles) is list:
@@ -16,14 +18,14 @@ class Index:
             raise TypeError("dataFiles should be a string or a list")
 
     def readDocIdsInFile(self, file):
-        """Populating a dictionary { docId: { file: filePath, start: startPos, end: endPos } } for each document."""
+        '''Populating a dictionary { docId: { file: filePath, start: startPos, end: endPos } } for each document.'''
         with open(file) as f:
             lines = f.readlines()
             i = 0
             previousDocId = None
             for line in lines:
-                if line.startswith(self.idMarker):
-                    docId = int(line[len(self.idMarker):])
+                if line.startswith(self.config.idMarker):
+                    docId = int(line[len(self.config.idMarker):])
                     if previousDocId != None:
                         self.documentLocations[previousDocId]["end"] = i - 1
                     dic = { "file": file, "start": i, "end": None }
@@ -34,7 +36,7 @@ class Index:
                 self.documentLocations[previousDocId]["end"] = i - 1
 
     def getDocumentContent(self, docId):
-        """Outputs the document content"""
+        '''Outputs the document content as a list of lines'''
         if docId in self.documentLocations:
             content = []
             docInfo = self.documentLocations[docId]
@@ -44,29 +46,3 @@ class Index:
                         content = content + [line]
             return content
         raise ValueError("doc "+ docId + " not found")
-
-class DocumentIndex:
-    """Class containing the indexing result for one document"""
-    def __init__(self, content):
-        self.fields = [".I", ".T", ".W", ".K", ".B", ".A", ".N", ".X",".K"]
-        self.focusFields = [".T", ".W", ".K"]
-        self.getFieldPositions(content)
-        self.createIndex(content)
-
-    def getFieldPositions(self, content):
-        self.fieldPositions = {}
-        for field in self.fields:
-            self.fieldPositions[field] = next((i for i, l in enumerate(content) if l.startswith(field)), -1)
-
-
-    def createIndex(self, content):
-        for field in self.fields:
-            fieldContent = self.getFieldContent(field, content)
-
-    def getFieldContent(self, field, documentContent):
-        startPos = self.fieldPositions[field] + 1
-        if (startPos <= 0):
-            return ""
-        lis = {v for (k,v) in self.fieldPositions.iteritems() if v > startPos}
-        stopPos = min(lis) if lis else len(documentContent)
-        return "\n".join(documentContent[startPos:stopPos])
