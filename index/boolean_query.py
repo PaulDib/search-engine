@@ -1,8 +1,15 @@
-class BooleanQueryParser:
+class BooleanQuery:
     def __init__(self, query):
-        pass
+        self._root = None
+
+    def execute(self):
+        if self._root:
+            return self._root.getPostings()
+        else:
+            raise ValueError("There is no valid boolean query to execute.")
 
 class OperatorNode:
+    '''Node in the boolean query execution tree'''
     def __init__(self, operator = "", operands = []):
         self._operator = operator
         self._operands = operands
@@ -11,6 +18,7 @@ class OperatorNode:
         return self._operator.applyOperator(self._operands)
 
 class WordLeaf:
+    '''Leaf in the boolean query execution tree'''
     _index = None
 
     def __init__(self, word):
