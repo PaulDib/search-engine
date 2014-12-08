@@ -12,3 +12,5 @@ else:
 
 print(index._index[60])
 print(index._invertedIndex['constraints'])
+print(len(index._index))
+print(len(index._invertedIndex))

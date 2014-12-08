@@ -16,7 +16,11 @@ class Index:
 
     def documentById(self, docId):
         '''Returns a dictionary of words with their frequency in a document'''
-        return self._index[docId] if docId in self._index else {}œ
+        return self._index[docId] if docId in self._index else {}
+
+    def getAllDocIds(self):
+        '''Returns a list with all doc ids in the index'''
+        return [docId for docId in self._index]
 
     def _initIndex(self):
         self._invertedIndex = {}
