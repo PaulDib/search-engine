@@ -1,33 +1,35 @@
 from document_index import DocumentIndex
 from utility import mergeDictionaries
-import pickle
 
 class Index:
     '''Class containing the whole index: documents and the lists of frequencies'''
     def __init__(self, dataFiles, indexConfig):
         self._config = indexConfig
         self._dataFiles = dataFiles
-        self._documentLocations = {}
         self._locateDocuments()
-        self._initInvertedIndex()
+        self._initIndex()
 
-    def writeToFile(self, file):
-        pickle.dump(self, file)
+    def search(self, word):
+        '''Returns a list of docIds containing the requested word.'''
+        stdWord = word.lower()
+        return self._invertedIndex[stdWord] if stdWord in self._invertedIndex else []
 
-    @staticmethod
-    def readIndexFromFile(file):
-        return None
+    def documentById(self, docId):
+        '''Returns a dictionary of words with their frequency in a document'''
+        return self._index[docId] if docId in self._index else {}œ
 
-    def _initInvertedIndex(self):
+    def _initIndex(self):
         self._invertedIndex = {}
-        for docId in self._documentLocations:
+        for docId in self._index:
             docIndex = DocumentIndex(self._getDocumentContent(docId), self._config)
             wordCount = docIndex.getWordCount()
+            self._index[docId]['words'] = wordCount
             invertedWords = { word: [{'docId': docId, 'count': wordCount[word]}] for word in wordCount if wordCount[word] > 0 }
             self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _locateDocuments(self):
         '''Populating a dictionary locating each document in the different data files.'''
+        self._index = {}
         if isinstance(self._dataFiles, str):
             self._readDocIdsInFile(self._dataFiles)
         elif  type(self._dataFiles) is list:
@@ -46,19 +48,19 @@ class Index:
                 if line.startswith(self._config.idMarker):
                     docId = int(line[len(self._config.idMarker):])
                     if previousDocId != None:
-                        self._documentLocations[previousDocId]["end"] = i - 1
+                        self._index[previousDocId]["end"] = i - 1
                     dic = { "file": file, "start": i, "end": None }
-                    self._documentLocations[docId] = dic
+                    self._index[docId] = dic
                     previousDocId = docId
                 i = i + 1
             if previousDocId != None:
-                self._documentLocations[previousDocId]["end"] = i - 1
+                self._index[previousDocId]["end"] = i - 1
 
     def _getDocumentContent(self, docId):
         '''Outputs the document content as a list of lines'''
-        if docId in self._documentLocations:
+        if docId in self._index:
             content = []
-            docInfo = self._documentLocations[docId]
+            docInfo = self._index[docId]
             with open(docInfo["file"]) as f:
                 for i, line in enumerate(f):
                     if i >= docInfo["start"] and i <= docInfo["end"]:

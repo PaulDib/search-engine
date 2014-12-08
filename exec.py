@@ -9,3 +9,6 @@ else:
     config = IndexConfig("data/common_words")
     index = Index("data/cacm.all", config)
     IndexSerializer.saveToFile(index, 'index.idx')
+
+print(index._index[60])
+print(index._invertedIndex['constraints'])

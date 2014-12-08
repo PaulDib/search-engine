@@ -4,7 +4,7 @@ from index.index import Index
 from index.index_config import IndexConfig
 
 class IndexTests(unittest.TestCase):
-    def test_Index(self):
+    def test_InvertedIndex(self):
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         expected = {
          'subtractions': [{'count': 1, 'docId': 2}],
@@ -24,7 +24,7 @@ class IndexTests(unittest.TestCase):
         }
         self.assertEqual(expected, index._invertedIndex)
 
-    def test_Index_withStopWords(self):
+    def test_InvertedIndex_withStopWords(self):
         config = IndexConfig()
         config.stopWords = ['of', 'by','for']
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", config)
@@ -42,3 +42,25 @@ class IndexTests(unittest.TestCase):
          'roots': [{'count': 1, 'docId': 2}]
         }
         self.assertEqual(expected, index._invertedIndex)
+
+    def test_Search(self):
+        index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+        self.assertEqual([], index.search('thereShouldBeNoDocument'))
+        self.assertEqual([{'count': 1, 'docId': 1}, {'count': 1, 'docId': 2}], index.search('Language'))
+
+    def test_DocumentById(self):
+        index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+        expected =  {
+            'end': 44,
+            'file': '/home/paul/cours/riw/projet/index/tests/test_data',
+            'start': 0,
+            'words': {
+                'algebraic': 1,
+                'international': 1,
+                'language': 1,
+                'preliminary': 2,
+                'report': 1
+            }
+        }
+        self.assertEqual({}, index.documentById(404))
+        self.assertEqual(expected, index.documentById(1))
