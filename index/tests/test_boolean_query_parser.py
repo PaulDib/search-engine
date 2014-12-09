@@ -14,6 +14,4 @@ class BooleanQueryParserTests(unittest.TestCase):
         operands = [WordLeaf('algebraic')]
         expected_root = OperatorNode(OperatorNot, operands)
         actual_root = BooleanQuery(expression)._root
-        print expected_root
-        print actual_root
         self.assertEqual(str(expected_root), str(actual_root))

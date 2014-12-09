@@ -25,52 +25,69 @@ class OperatorNot:
         all_docs = set(WordLeaf._index.getAllDocIds())
         return all_docs.difference(operands[0].getPostings())
 
-def parseExpression(expression):
-    operand_pattern = r'\(?[\(\)\w]+\)?'
-    binary_operator_pattern = r'[{0}]'.format("".join(BooleanQuery.binary_operators.keys()))
-    unary_operator_pattern = r'[{0}]'.format("".join(BooleanQuery.unary_operators.keys()))
+class BooleanExpressionParser:
+    def __init__(self):
+        self._binary_operators = {
+            '+': OperatorOr,
+            '*': OperatorAnd
+        }
+        self._unary_operators = {
+            '!': OperatorNot
+        }
+        self._initPatterns()
 
-    single_operand_pattern = r'^\s*(?P<operand>{0})\s*$'.format(operand_pattern)
+    def parseExpression(self, expression):
+        '''Recursively constructs an evaluation tree for a boolean query.'''
+        binary_expr = self._parseBinaryExpression(expression)
+        if binary_expr:
+            return binary_expr
 
-    unary_expr_pattern_format = r'^\s*(?P<operator>{0})\s*(?P<operand>{1})\s*$'
-    unary_expr_pattern = unary_expr_pattern_format.format(unary_operator_pattern, operand_pattern)
+        unary_expr = self._parseUnaryExpression(expression)
+        if unary_expr:
+            return unary_expr
 
-    binary_expr_pattern_format = r'^\s*(?P<operand1>{0})\s*(?P<operator>{1})\s*(?P<operand2>{2})\s*$'
-    binary_expr_pattern = binary_expr_pattern_format.format(operand_pattern, binary_operator_pattern, operand_pattern)
+        single_operand = self._parseSingleOperand(expression)
+        if single_operand:
+            return single_operand
 
-    matches = re.match(binary_expr_pattern, expression)
-    if matches:
-        operand1 = parseExpression(matches.group('operand1'))
-        operand2 = parseExpression(matches.group('operand2'))
-        operator = BooleanQuery.binary_operators[matches.group('operator')]
-        return OperatorNode(operator, [operand1, operand2])
+    def _initPatterns(self):
+        operand_pattern = r'\(?[\(\)\w]+\)?'
+        binary_operator_pattern = r'[{0}]'.format("".join(self._binary_operators.keys()))
+        unary_operator_pattern = r'[{0}]'.format("".join(self._unary_operators.keys()))
 
-    matches = re.match(unary_expr_pattern, expression)
-    if matches:
-        operand = parseExpression(matches.group('operand'))
-        operator = BooleanQuery.unary_operators[matches.group('operator')]
-        return OperatorNode(operator, [operand])
+        unary_expr_pattern_format = r'^\s*(?P<operator>{0})\s*(?P<operand>{1})\s*$'
+        binary_expr_pattern_format = r'^\s*(?P<operand1>{0})\s*(?P<operator>{1})\s*(?P<operand2>{2})\s*$'
 
-    matches = re.match(single_operand_pattern, expression)
-    if matches:
-        operand = matches.group('operand')
-        return WordLeaf(operand)
+        self._single_operand_pattern = r'^\s*(?P<operand>{0})\s*$'.format(operand_pattern)
+        self._unary_expr_pattern = unary_expr_pattern_format.format(unary_operator_pattern, operand_pattern)
+        self._binary_expr_pattern = binary_expr_pattern_format.format(operand_pattern, binary_operator_pattern, operand_pattern)
 
+    def _parseBinaryExpression(self, expression):
+        matches = re.match(self._binary_expr_pattern, expression)
+        if matches:
+            operand1 = self.parseExpression(matches.group('operand1'))
+            operand2 = self.parseExpression(matches.group('operand2'))
+            operator = self._binary_operators[matches.group('operator')]
+            return OperatorNode(operator, [operand1, operand2])
+
+    def _parseUnaryExpression(self, expression):
+        matches = re.match(self._unary_expr_pattern, expression)
+        if matches:
+            operand = self.parseExpression(matches.group('operand'))
+            operator = self._unary_operators[matches.group('operator')]
+            return OperatorNode(operator, [operand])
+
+    def _parseSingleOperand(self, expression):
+        matches = re.match(self._single_operand_pattern, expression)
+        if matches:
+            operand = matches.group('operand')
+            return WordLeaf(operand)
 
 
 class BooleanQuery:
     '''Represents a boolean query that can use the * (and), + (or) and ! (not) operators'''
-    binary_operators = {
-        '+': OperatorOr,
-        '*': OperatorAnd
-    }
-
-    unary_operators = {
-        '!': OperatorNot
-    }
-
-    def __init__(self, query):
-        self._root = parseExpression(query)
+    def __init__(self, query, parser = BooleanExpressionParser()):
+        self._root = parser.parseExpression(query)
 
     def execute(self):
         if self._root:
