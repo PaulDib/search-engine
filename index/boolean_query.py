@@ -50,10 +50,12 @@ class BooleanExpressionParser:
         if single_operand:
             return single_operand
 
+        raise ValueError("Invalid boolean query: <" + expression + ">.")
+
     def _initPatterns(self):
-        operand_pattern = r'\(?[\(\)\w]+\)?'
         binary_operator_pattern = r'[{0}]'.format("".join(self._binary_operators.keys()))
         unary_operator_pattern = r'[{0}]'.format("".join(self._unary_operators.keys()))
+        operand_pattern = r'\(?[\(\)\w{0}{1}]+\)?'.format("".join(self._unary_operators.keys()), "".join(self._binary_operators.keys()))
 
         unary_expr_pattern_format = r'^\s*(?P<operator>{0})\s*(?P<operand>{1})\s*$'
         binary_expr_pattern_format = r'^\s*(?P<operand1>{0})\s*(?P<operator>{1})\s*(?P<operand2>{2})\s*$'
