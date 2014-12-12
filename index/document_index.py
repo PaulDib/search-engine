@@ -1,4 +1,4 @@
-from utility import *
+from .utility import *
 
 class DocumentIndex:
     '''Class containing the indexing result for one document.'''
@@ -7,7 +7,7 @@ class DocumentIndex:
         self.wordCount = {}
         self._getFieldPositions(content)
         self._initIndex(content)
-
+        
     def getWordCount(self):
         return self.wordCount
 
@@ -15,10 +15,9 @@ class DocumentIndex:
         startPos = self.fieldPositions[field] + 1
         if (startPos <= 0):
             return ""
-        nextFields = {v for (k,v) in self.fieldPositions.iteritems() if v > startPos}
+        nextFields = {v for (k,v) in self.fieldPositions.items() if v > startPos}
         stopPos = min(nextFields) if nextFields else len(documentContent)
         return "\n".join(documentContent[startPos:stopPos])
-
 
     def _getFieldPositions(self, content):
         '''Populates fieldPositions = { 'fieldName': startPosition } dictionary.'''

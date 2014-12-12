@@ -1,5 +1,5 @@
-from document_index import DocumentIndex
-from utility import mergeDictionaries
+from .document_index import DocumentIndex
+from .utility import mergeDictionaries
 
 class Index:
     '''Class containing the whole index: documents and the lists of frequencies'''

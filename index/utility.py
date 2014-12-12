@@ -25,5 +25,10 @@ def getWordList(content):
 
 def countTokens(tokens):
     '''Given a list of elements, counts the number of occurences of each element as a dictionary.'''
-    tokens = map(lambda x: { x: 1 }, tokens)
-    return reduce(mergeDictionaries, tokens, {})
+    result = {}
+    for token in tokens:
+        if token in result:
+            result[token] = result[token] + 1
+        else:
+            result[token] = 1
+    return result
