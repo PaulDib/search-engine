@@ -9,7 +9,7 @@ class BooleanQueryTests(unittest.TestCase):
         WordLeaf._index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
 
     def test_BooleanQuery_Or_simple(self):
-        '''Test "algrebraic + extraction"'''
+        '''Testing query results for "algrebraic + extraction"'''
         operands = [WordLeaf("algebraic"), WordLeaf("extraction")]
         root = OperatorNode(operator = OperatorOr, operands = operands)
         actual = root.getPostings()
@@ -17,7 +17,7 @@ class BooleanQueryTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_BooleanQuery_Or_redundancy(self):
-        '''Test "language + extraction"'''
+        '''Testing query results for "language + extraction"'''
         operands = [WordLeaf("language"), WordLeaf("extraction")]
         root = OperatorNode(operator = OperatorOr, operands = operands)
         actual = root.getPostings()
@@ -25,7 +25,7 @@ class BooleanQueryTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_BooleanQuery_And_simple(self):
-        '''Test "algrebraic * extraction"'''
+        '''Testing query results for "algrebraic * extraction"'''
         operands = [WordLeaf("algebraic"), WordLeaf("extraction")]
         root = OperatorNode(operator = OperatorAnd, operands = operands)
         actual = root.getPostings()
@@ -33,7 +33,7 @@ class BooleanQueryTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_BooleanQuery_And_no_results(self):
-        '''Test "language * extraction"'''
+        '''Testing query results for "language * extraction"'''
         operands = [WordLeaf("language"), WordLeaf("extraction")]
         root = OperatorNode(operator = OperatorAnd, operands = operands)
         actual = root.getPostings()
@@ -41,7 +41,7 @@ class BooleanQueryTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_BooleanQuery_Not_simple(self):
-        '''Test "!algebraic"'''
+        '''Testing query results for "!algebraic"'''
         operands = [WordLeaf("algebraic")]
         root = OperatorNode(operator = OperatorNot, operands = operands)
         actual = root.getPostings()
@@ -49,7 +49,7 @@ class BooleanQueryTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_BooleanQuery_Not_all_docs(self):
-        '''Test "!algebrafsqffsqfic"'''
+        '''Testing query results for "!algebrafsqffsqfic"'''
         operands = [WordLeaf("algebrafsqffsqfic")]
         root = OperatorNode(operator = OperatorNot, operands = operands)
         actual = root.getPostings()
@@ -57,7 +57,7 @@ class BooleanQueryTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_BooleanQuery_AllOperators(self):
-        '''Test "(algrebraic + extraction) * !algebraic"'''
+        '''Testing query results for "(algrebraic + extraction) * !algebraic"'''
         operands1 = [WordLeaf("algebraic"), WordLeaf("extraction")]
         operator1 = OperatorNode(operator = OperatorOr, operands = operands1)
         operands2 = [WordLeaf("algebraic")]

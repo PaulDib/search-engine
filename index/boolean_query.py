@@ -82,7 +82,7 @@ class BooleanExpressionParser:
     def _parseSingleOperand(self, expression):
         matches = re.match(self._single_operand_pattern, expression)
         if matches:
-            operand = matches.group('operand')
+            operand = matches.group('operand').strip('()')
             return WordLeaf(operand)
 
 
