@@ -1,4 +1,5 @@
 import re
+from pyparsing import nestedExpr
 
 class OperatorOr:
     @staticmethod
@@ -34,57 +35,75 @@ class BooleanExpressionParser:
         self._unary_operators = {
             '!': OperatorNot
         }
-        self._initPatterns()
 
     def parseExpression(self, expression):
-        '''Recursively constructs an evaluation tree for a boolean query.'''
-        binary_expr = self._parseBinaryExpression(expression)
-        if binary_expr:
-            return binary_expr
+        '''Constructs an evaluation tree for a boolean query.'''
+        expression = self.formatExpression(expression)
+        nested = nestedExpr().parseString(expression).asList()
+        return self._createOperator(nested)
 
-        unary_expr = self._parseUnaryExpression(expression)
-        if unary_expr:
-            return unary_expr
+    def _createOperator(self, nestedItem):
+        '''Returns the root operator corresponding to a list of words, operators, and nested expressions.'''
+        if isinstance(nestedItem, str):
+            if nestedItem in self._binary_operators or nestedItem in self._unary_operators:
+                return nestedItem
+            else:
+                return WordLeaf(nestedItem)
+        if isinstance(nestedItem, list):
+            operators = [self._createOperator(item) for item in nestedItem]
+            return self._combineOperators(operators)
+        raise ValueError("Parsing failed.")
 
-        single_operand = self._parseSingleOperand(expression)
-        if single_operand:
-            return single_operand
+    def _combineOperators(self, operators):
+        '''Returns the operator corresponding to a list of operators.'''
+        if not operators:
+            raise ValueError("Invalid expression")
 
-        raise ValueError("Invalid boolean query: <" + expression + ">.")
+        root = self._combineUnaryOperators(operators)
+        return root[0]
 
-    def _initPatterns(self):
-        binary_operator_pattern = r'[{0}]'.format("".join(self._binary_operators.keys()))
-        unary_operator_pattern = r'[{0}]'.format("".join(self._unary_operators.keys()))
-        operand_pattern = r'\(?[\(\)\w{0}{1}]+\)?'.format("".join(self._unary_operators.keys()), "".join(self._binary_operators.keys()))
+    def _combineUnaryOperators(self, operators):
+        combined_ops = []
+        is_operand = False
+        last_operator = None
+        node = None
+        for i in range(0, len(operators)):
+            op = operators[i]
+            if op in self._unary_operators:
+                if i + 1 >= len(operators):
+                    raise ValueError("Unary operator should be followed by its operand.")
+                node = OperatorNode(self._unary_operators[op])
+                if is_operand:
+                    combined_ops[i-1].addOperand(node)
+                else:
+                    is_operand = True
+                    combined_ops.append(node)
+                last_operator = node
+            elif is_operand:
+                last_operator.addOperand(op)
+                is_operand = False
+            else:
+                combined_ops.append(op)
+        return combined_ops
 
-        unary_expr_pattern_format = r'^\s*(?P<operator>{0})\s*(?P<operand>{1})\s*$'
-        binary_expr_pattern_format = r'^\s*(?P<operand1>{0})\s*(?P<operator>{1})\s*(?P<operand2>{2})\s*$'
+    def _combineBinaryOperators(self, operators):  
+        combined_ops = []
+        last_operator = operators[0]
+        for i in range(1, len(operators)):
+            op = operators[i]
+            if op in self._binary_operators:
+                if i - 1 < 0 or i + 1 >= len(operators):
+                    raise ValueError("Binary operator should be between its operands.")
+                last_operator = OperatorNode(operator = self._binary_operators[op], operands = [last_operator])
+            else:
+                last_operator.addOperand(op)
+        return last_operator
 
-        self._single_operand_pattern = r'^\s*(?P<operand>{0})\s*$'.format(operand_pattern)
-        self._unary_expr_pattern = unary_expr_pattern_format.format(unary_operator_pattern, operand_pattern)
-        self._binary_expr_pattern = binary_expr_pattern_format.format(operand_pattern, binary_operator_pattern, operand_pattern)
-
-    def _parseBinaryExpression(self, expression):
-        matches = re.match(self._binary_expr_pattern, expression)
-        if matches:
-            operand1 = self.parseExpression(matches.group('operand1'))
-            operand2 = self.parseExpression(matches.group('operand2'))
-            operator = self._binary_operators[matches.group('operator')]
-            return OperatorNode(operator, [operand1, operand2])
-
-    def _parseUnaryExpression(self, expression):
-        matches = re.match(self._unary_expr_pattern, expression)
-        if matches:
-            operand = self.parseExpression(matches.group('operand'))
-            operator = self._unary_operators[matches.group('operator')]
-            return OperatorNode(operator, [operand])
-
-    def _parseSingleOperand(self, expression):
-        matches = re.match(self._single_operand_pattern, expression)
-        if matches:
-            operand = matches.group('operand').strip('()')
-            return WordLeaf(operand)
-
+    def formatExpression(self, expression):
+        expression = '(' + re.sub('[\s]', '', expression) + ')'
+        op_pattern = r'([{0}{1}])'.format("".join(self._binary_operators.keys()), "".join(self._unary_operators.keys()))
+        expression = re.sub(op_pattern, r" \1 ", expression)
+        return expression
 
 class BooleanQuery:
     '''Represents a boolean query that can use the * (and), + (or) and ! (not) operators'''
@@ -99,7 +118,7 @@ class BooleanQuery:
 
 class OperatorNode:
     '''Node in the boolean query execution tree'''
-    def __init__(self, operator = "", operands = []):
+    def __init__(self, operator = None, operands = []):
         self._operator = operator
         self._operands = operands
 
@@ -111,6 +130,9 @@ class OperatorNode:
 
     def getPostings(self):
         return self._operator.applyOperator(self._operands)
+
+    def addOperand(self, operand):
+        self._operands.append(operand)
 
 class WordLeaf:
     '''Leaf in the boolean query execution tree'''

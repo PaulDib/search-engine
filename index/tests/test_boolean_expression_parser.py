@@ -2,6 +2,13 @@ import unittest
 from index.boolean_query import *
 
 class BooleanExpressionParserTests(unittest.TestCase):
+    def test_BooleanExpressionParser_format_expression(self):
+        '''Testing expression formatter'''
+        expression = "algebraic+! language"
+        formatted_expr = "(algebraic +  ! language)"
+        parser = BooleanExpressionParser()
+        self.assertEqual(formatted_expr, parser.formatExpression(expression))
+
     def test_BooleanExpressionParser_binary_operator(self):
         '''Testing query parsing for binary operator'''
         expression = "algebraic + language"
@@ -34,7 +41,7 @@ class BooleanExpressionParserTests(unittest.TestCase):
 
     def test_BooleanExpressionParser_complex_expression(self):
         '''Testing query parsing for highly nested expression.'''
-        self.maxDiff = None 
+        self.maxDiff = None
         expression = "((algebraic+!language)*!(expression + (algebraic*language)))"
         opNot = OperatorNode(OperatorNot, [WordLeaf('language')])
 
