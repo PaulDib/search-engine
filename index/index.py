@@ -6,7 +6,8 @@ class Index:
     def __init__(self, dataFiles, indexConfig):
         self._config = indexConfig
         self._dataFiles = dataFiles
-        self._locateDocuments()
+        self._index = {}
+        self._invertedIndex = {}
         self._initIndex()
 
     def search(self, word):
@@ -23,42 +24,45 @@ class Index:
         return [docId for docId in self._index]
 
     def _initIndex(self):
-        self._invertedIndex = {}
-        for docId in self._index:
-            docIndex = DocumentIndex(self._getDocumentContent(docId), self._config)
-            wordCount = docIndex.getWordCount()
-            self._index[docId]['words'] = wordCount
-            invertedWords = { word: [{'docId': docId, 'count': wordCount[word]}] for word in wordCount if wordCount[word] > 0 }
-            self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
-
-    def _locateDocuments(self):
-        '''Populating a dictionary locating each document in the different data files.'''
-        self._index = {}
         if isinstance(self._dataFiles, str):
-            self._readDocIdsInFile(self._dataFiles)
+            self._indexFile(self._dataFiles)
         elif  type(self._dataFiles) is list:
             for file in self._dataFiles:
-                self._readDocIdsInFile(file)
+                self._indexFile(file)
         else:
             raise TypeError("dataFiles should be a string or a list")
 
-    def _readDocIdsInFile(self, file):
-        '''Populating a dictionary { docId: { file: filePath, start: startPos, end: endPos } } for each document.'''
+    def _indexFile(self, file):
+        '''Populating the index with the results for one file.'''
         with open(file) as f:
-            lines = f.readlines()
-            i = 0
-            previousDocId = None
-            for line in lines:
+            docId = None
+            documentContent = []
+            for i, line in enumerate(f):
                 if line.startswith(self._config.idMarker):
+                    if docId != None:
+                        # Indexing previous document
+                        self._saveDocumentLocation(docId, file, documentStartPos, i - 1)
+                        self._addDocumentToIndex(docId, documentContent)
                     docId = int(line[len(self._config.idMarker):])
-                    if previousDocId != None:
-                        self._index[previousDocId]["end"] = i - 1
-                    dic = { "file": file, "start": i, "end": None }
-                    self._index[docId] = dic
-                    previousDocId = docId
-                i = i + 1
-            if previousDocId != None:
-                self._index[previousDocId]["end"] = i - 1
+                    documentStartPos = i
+                    documentContent = []
+                documentContent = documentContent + [line]
+
+            # Handling last document.
+            if docId != None:
+                self._saveDocumentLocation(docId, file, documentStartPos, i - 1)
+                self._addDocumentToIndex(docId, documentContent)
+
+    def _saveDocumentLocation(self, docId, file, startPos, endPos):
+        '''Saves the position of the document in its file for later reads.'''
+        self._index[docId] = { "file": file, "start": startPos, "end": endPos }
+
+    def _addDocumentToIndex(self, docId, content):
+        '''Populating the index with the result for one document.'''
+        wordCount = DocumentIndex(content, self._config).getWordCount()
+        self._index[docId]['words'] = wordCount
+        invertedWords = { word: [{'docId': docId, 'count': wordCount[word]}] for word in wordCount if wordCount[word] > 0 }
+        self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _getDocumentContent(self, docId):
         '''Outputs the document content as a list of lines'''

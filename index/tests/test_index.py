@@ -5,6 +5,7 @@ from index.index_config import IndexConfig
 
 class IndexTests(unittest.TestCase):
     def test_InvertedIndex(self):
+        self.maxDiff = None
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         expected = {
          'subtractions': [{'count': 1, 'docId': 2}],
