@@ -1,7 +1,6 @@
 import re
 from pyparsing import nestedExpr
 
-
 class OperatorOr:
     @staticmethod
     def applyOperator(operands):
@@ -26,7 +25,7 @@ class OperatorNot:
     def applyOperator(operands):
         if len(operands) != 1:
             raise ValueError("The NOT operator should be used with exactly one operand")
-        all_docs = set(WordLeaf._index.getAllDocIds())
+        all_docs = set(operands[0]._index.getAllDocIds())
         return all_docs.difference(operands[0].getPostings())
 
 
@@ -52,13 +51,15 @@ class OperatorNode:
     def addOperand(self, operand):
         self._operands.append(operand)
 
+    def setIndex(self, index):
+        for operand in self._operands:
+            operand.setIndex(index)
+
 
 class WordLeaf:
     '''Leaf in the boolean query execution tree'''
-    _index = None
-
     def __init__(self, word):
-        self._index
+        self._index = None
         self._word = word
 
     def __str__(self):
@@ -70,17 +71,8 @@ class WordLeaf:
     def getPostings(self):
         return { posting['docId'] for posting in self._index.search(self._word) }
 
-
-class BooleanQuery:
-    '''Represents a boolean query that can use the * (and), + (or) and ! (not) operators'''
-    def __init__(self, query, parser = BooleanExpressionParser()):
-        self._root = parser.parseExpression(query)
-
-    def execute(self):
-        if self._root:
-            return self._root.getPostings()
-        else:
-            raise ValueError("There is no valid boolean query to execute.")
+    def setIndex(self, index):
+        self._index = index
 
 
 class BooleanExpressionParser:
@@ -164,3 +156,17 @@ class BooleanExpressionParser:
             else:
                 root.addOperand(op)
         return root
+
+
+class BooleanQuery:
+    '''Represents a boolean query that can use the * (and), + (or) and ! (not) operators'''
+    def __init__(self, query, parser = BooleanExpressionParser()):
+        self._root = parser.parseExpression(query)
+
+    def execute(self, index = None):
+        if index:
+            self._root.setIndex(index)
+        if self._root:
+            return self._root.getPostings()
+        else:
+            raise ValueError("There is no valid boolean query to execute.")
