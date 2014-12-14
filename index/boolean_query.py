@@ -165,8 +165,11 @@ class BooleanQuery:
 
     def execute(self, index = None):
         if index:
-            self._root.setIndex(index)
+            self.setIndex(index)
         if self._root:
             return self._root.getPostings()
         else:
             raise ValueError("There is no valid boolean query to execute.")
+
+    def setIndex(self, index):
+        self._root.setIndex(index)
