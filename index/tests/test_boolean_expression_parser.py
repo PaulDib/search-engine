@@ -58,7 +58,12 @@ class BooleanExpressionParserTests(unittest.TestCase):
         actual_root = BooleanQuery(expression)._root
         self.assertEqual(str(expected_root), str(actual_root))
 
-    def test_BooleanExpressionParser_invalid_expression(self):
-        '''Testing query parsing should fail with an invalid expression.'''
-        expression = "algebraic * language + expression"
+    def test_BooleanExpressionParser_unbalanced_expression_inside(self):
+        '''Testing query parsing should fail with an unbalanced expression.'''
+        expression = "algebraic * (language + expression"
+        self.assertRaises(ValueError, BooleanQuery, expression)
+
+    def test_BooleanExpressionParser_unbalanced_expression_beginning(self):
+        '''Testing query parsing should fail with an unbalanced expression.'''
+        expression = "(algebraic * language + expression"
         self.assertRaises(ValueError, BooleanQuery, expression)
