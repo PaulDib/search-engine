@@ -1,6 +1,7 @@
 from index.index_config import IndexConfig
 from index.index import Index
 from index.index_serializer import IndexSerializer
+from index.boolean_query import BooleanQuery
 import os
 
 if os.path.isfile('index.idx'):
@@ -10,7 +11,6 @@ else:
     index = Index("data/cacm.all", config)
     IndexSerializer.saveToFile(index, 'index.idx')
 
-print(index._index[60])
-print(index._invertedIndex['constraints'])
-print(len(index._index))
-print(len(index._invertedIndex))
+query = BooleanQuery("algebraic * (language + !expression)")
+results = query.execute(index)
+print(results)
