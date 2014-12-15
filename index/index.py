@@ -1,8 +1,10 @@
-from .document_index import DocumentIndex
+from .document_index import DocumentIndex, Document
 from .utility import mergeDictionaries
 
 class Index:
-    '''Class containing the whole index: documents and the lists of frequencies'''
+    '''
+    Class containing the whole index: documents and the lists of frequencies
+    '''
     def __init__(self, dataFiles, indexConfig):
         self._config = indexConfig
         self._dataFiles = dataFiles
@@ -16,6 +18,10 @@ class Index:
         return self._invertedIndex[stdWord] if stdWord in self._invertedIndex else []
 
     def documentById(self, docId):
+        '''Returns a Document object for a requested doc id.'''
+        return Document(self._getDocumentContent(docId), self._config)
+
+    def indexByDocId(self, docId):
         '''Returns a dictionary of words with their frequency in a document'''
         return self._index[docId] if docId in self._index else {}
 

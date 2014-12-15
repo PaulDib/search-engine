@@ -1,4 +1,5 @@
 from .utility import *
+import re
 
 class Document:
     '''
@@ -16,6 +17,11 @@ class Document:
         nextFields = {v for (k,v) in self.fieldPositions.items() if v > startPos}
         stopPos = min(nextFields) if nextFields else len(self._content)
         return "\n".join(self._content[startPos:stopPos])
+
+    def getTitle(self):
+        result = self.getFieldContent(self._config.titleField).strip()
+        result = re.sub(r'(\s)+', r' ', result)
+        return result
 
     def _getFieldPositions(self):
         '''Populates fieldPositions = { 'fieldName': startPosition } dictionary.'''

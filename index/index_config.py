@@ -8,6 +8,7 @@ class IndexConfig:
         self.fields = [".I", ".T", ".W", ".K", ".B", ".A", ".N", ".X",".K"]
         self.focusFields = [".T", ".W", ".K"]
         self.idMarker = ".I"
+        self.titleField = ".T"
 
     def readStopWords(self, stopWordFile):
         with open(stopWordFile) as file:

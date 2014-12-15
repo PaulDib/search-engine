@@ -23,3 +23,7 @@ class DocumentIndexTests(unittest.TestCase):
     def test_createIndex(self):
         expected = {'report': 1, 'international': 1, 'algebraic': 1, 'language': 1, 'preliminary': 2}
         self.assertEqual(expected, self.docIndex.getWordCount())
+
+    def test_getTitle(self):
+        expected = "Preliminary Report-International Algebraic Language preliminary"
+        self.assertEqual(expected, self.doc.getTitle())

@@ -88,13 +88,21 @@ class BooleanQueryAction(Action):
         queryText = "".join(arguments)
         self._query = BooleanQuery(queryText)
         self._query.setIndex(client.index)
+        self.index = client.index
 
     def execute(self):
         t_start = time.time()
         docs = self._query.execute()
         duration = time.time() - t_start
         print("Query executed in " + str(duration) + " seconds and returnd " + str(len(docs)) + " results.")
-        print(docs)
+        it = iter(docs)
+        for i in range(0, 10):
+            docId = next(it)
+            document = self.index.documentById(docId)
+            print("<" + str(docId) + "> - " + document.getTitle())
+        if len(docs) > 10:
+            print("\nMore than 10 results, the list has been truncated. Here is the full list of document ids:")
+            print(docs)
 
     @staticmethod
     def help():

@@ -48,7 +48,7 @@ class IndexTests(unittest.TestCase):
         self.assertEqual([], index.search('thereShouldBeNoDocument'))
         self.assertEqual([{'count': 1, 'docId': 1}, {'count': 1, 'docId': 2}], index.search('Language'))
 
-    def test_DocumentById(self):
+    def test_IndexByDocId(self):
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         expected =  {
             'end': 44,
@@ -62,5 +62,6 @@ class IndexTests(unittest.TestCase):
                 'report': 1
             }
         }
-        self.assertEqual({}, index.documentById(404))
-        self.assertEqual(expected, index.documentById(1))
+        self.assertEqual({}, index.indexByDocId(404))
+        self.assertEqual(expected, index.indexByDocId(1))
+        
