@@ -23,6 +23,7 @@ class ReplClient:
 
     def _startREPL(self):
         usrInput = ""
+        print("Starting interactive environment in directory " + self._working_dir)
         while(usrInput != "exit"):
             usrInput = self._command_line.readInput("> ")
             if not usrInput:
@@ -76,7 +77,7 @@ class CreateIndexAction(Action):
     def help():
         return '''Wrong use.
         Example: createIndex data_file1;data_file2 stop_word_file'''
-        
+
 
 class BooleanQueryAction(Action):
     def __init__(self, client, arguments):
