@@ -3,6 +3,7 @@ import time
 from .index import Index
 from .index_config import IndexConfig
 from .boolean_query import BooleanQuery
+from .command_line import CommandLine
 
 class ReplClient:
     '''Read-Eval-Print-Loop client for the index.'''
@@ -14,16 +15,16 @@ class ReplClient:
         self.index = None
         self._actions = {
             'createIndex': CreateIndexAction,
-            'boolean': BooleanQueryAction
+            'boolean': BooleanQueryAction,
+            'exit': EmptyAction
         }
-
+        self._command_line = CommandLine(autocomplete_actions = self._actions.keys())
         self._startREPL()
-
 
     def _startREPL(self):
         usrInput = ""
         while(usrInput != "exit"):
-            usrInput = input("> ")
+            usrInput = self._command_line.readInput("> ")
             if not usrInput:
                 continue
             try:
@@ -49,6 +50,13 @@ class Action:
         raise NotImplementedError("Wrong action.")
 
 
+class EmptyAction(Action):
+    def __init__(self, client, arguments):
+        pass
+
+    def execute(self):
+        pass
+
 class CreateIndexAction(Action):
     def __init__(self, client, arguments):
         self._client = client
@@ -68,7 +76,7 @@ class CreateIndexAction(Action):
     def help():
         return '''Wrong use.
         Example: createIndex data_file1;data_file2 stop_word_file'''
-
+        
 
 class BooleanQueryAction(Action):
     def __init__(self, client, arguments):
