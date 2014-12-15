@@ -92,8 +92,9 @@ class CommandLine:
                 self._buff_ptr = len(self._buff)
 
     def _erasePreviousChar(self):
-        self._buff = self._buff[0:self._buff_ptr-1] + self._buff[self._buff_ptr:]
-        self._buff_ptr = self._buff_ptr - 1 if self._buff_ptr > 0 else 0
+        if self._buff_ptr > 0:
+            self._buff = self._buff[0:self._buff_ptr-1] + self._buff[self._buff_ptr:]
+            self._buff_ptr = self._buff_ptr - 1
 
     def _addToBuffer(self, char):
         self._buff = self._buff[0:self._buff_ptr] + char + self._buff[self._buff_ptr:]
