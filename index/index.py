@@ -19,11 +19,31 @@ class Index:
 
     def documentById(self, docId):
         '''Returns a Document object for a requested doc id.'''
-        return Document(self._getDocumentContent(docId), self._config)
+        return StructuredDocument(self._getDocumentContent(docId), self._config)
 
     def indexByDocId(self, docId):
         '''Returns a dictionary of words with their frequency in a document'''
         return self._index[docId] if docId in self._index else {}
+
+    def getMatchingDocuments(self, documentWords):
+        '''
+        Returns documents similar to the input by computing the cosine of the
+        input document to the collection.
+        '''
+        results = {}
+        for word in documentWords:
+            weight_input = tf_idf(documentWords[word],
+                                    self._documentFrequencies[word],
+                                    self._number_of_docs)
+            if word in self._invertedIndex:
+                for doc in self._invertedIndex[word]:
+                    docId = doc['docId']
+                    weight_doc = doc['weight']
+                    if docId in results:
+                        results[docId] = results[docId] + weight_doc*weight_input
+                    else:
+                        results[docId] = weight_doc*weight_input
+        return results
 
     def getAllDocIds(self):
         '''Returns a list with all doc ids in the index'''
@@ -62,11 +82,13 @@ class Index:
                 self._addDocumentToIndex(docId, documentContent)
 
     def _initStatistics(self):
-        number_of_docs = len(self._index)
+        self._documentFrequencies = {}
+        self._number_of_docs = len(self._index)
         for word in self._invertedIndex:
             df = len(self._invertedIndex[word])
+            self._documentFrequencies[word] = df
             for doc in self._invertedIndex[word]:
-                tfidf = tf_idf(doc['count'], df, number_of_docs)
+                tfidf = tf_idf(doc['count'], df, self._number_of_docs )
                 doc['weight'] = tfidf
 
     def _saveDocumentLocation(self, docId, file, startPos, endPos):

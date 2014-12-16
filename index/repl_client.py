@@ -4,6 +4,7 @@ from .index import Index
 from .index_config import IndexConfig
 from .index_serializer import IndexSerializer
 from .boolean_query import BooleanQuery
+from .vectorial_query import VectorialQuery
 from .command_line import CommandLine
 
 class ReplClient:
@@ -19,7 +20,8 @@ class ReplClient:
             'boolean': BooleanQueryAction,
             'exit': EmptyAction,
             'saveIndex':  SaveIndexAction,
-            'loadIndex': LoadIndexAction
+            'loadIndex': LoadIndexAction,
+            'vectorial': VectorialQueryAction
         }
         self._command_line = CommandLine(autocomplete_actions = self._actions.keys())
         self._startREPL()
@@ -97,7 +99,7 @@ class BooleanQueryAction(Action):
         t_start = time.time()
         docs = self._query.execute()
         duration = time.time() - t_start
-        print("Query executed in " + str(duration) + " seconds and returnd " + str(len(docs)) + " results.")
+        print("Query executed in " + str(duration) + " seconds and returned " + str(len(docs)) + " results.")
         it = iter(docs)
         for i in range(0, min(len(docs), 10)):
             docId = next(it)
@@ -110,6 +112,33 @@ class BooleanQueryAction(Action):
     def help(self):
         return '''Wrong use.
         Example: boolean (word1 * !word2) + word3'''
+
+
+class VectorialQueryAction(Action):
+    def __init__(self, client, arguments):
+        if not arguments:
+            raise ValueError(self.help())
+        if not client.index:
+            raise ValueError("Create or load an index first.")
+        queryText = " ".join(arguments)
+        self._query = VectorialQuery(queryText)
+        self.index = client.index
+
+    def execute(self):
+        t_start = time.time()
+        docs = self._query.execute(self.index)
+        duration = time.time() - t_start
+        print("Query executed in " + str(duration) + " seconds and returned " + str(len(docs)) + " results.")
+        for (k,v) in docs[0:10]:
+            document = self.index.documentById(k)
+            print("<" + str(k) + "> - " + document.getTitle())
+        if len(docs) > 10:
+            print("More than 10 results, the list has been truncated. Here is the full list of document ids:")
+        print(docs)
+
+    def help(self):
+        return '''Wrong use.
+        Example: vectorial this is a vectorial query'''
 
 
 class SaveIndexAction(Action):
