@@ -99,12 +99,12 @@ class BooleanQueryAction(Action):
         duration = time.time() - t_start
         print("Query executed in " + str(duration) + " seconds and returnd " + str(len(docs)) + " results.")
         it = iter(docs)
-        for i in range(0, 10):
+        for i in range(0, min(len(docs), 10)):
             docId = next(it)
             document = self.index.documentById(docId)
             print("<" + str(docId) + "> - " + document.getTitle())
         if len(docs) > 10:
-            print("\nMore than 10 results, the list has been truncated. Here is the full list of document ids:")
+            print("More than 10 results, the list has been truncated. Here is the full list of document ids:")
             print(docs)
 
     def help(self):
@@ -137,15 +137,13 @@ class LoadIndexAction(Action):
     def __init__(self, client, arguments):
         if not arguments:
             raise ValueError(self.help())
-        if not client.index:
-            raise ValueError("Create or load an index first.")
-        self.client = client
+        self._client = client
         self._path = arguments[0]
 
     def execute(self):
         print("Loading index...")
         t0 = time.time()
-        client.index = IndexSerializer.loadFromFile(self._path)
+        self._client.index = IndexSerializer.loadFromFile(self._path)
         dur = time.time() - t0
         print("Index loaded in " + str(dur) + " seconds.")
 

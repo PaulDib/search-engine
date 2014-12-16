@@ -1,4 +1,4 @@
-from .document_index import DocumentIndex, Document
+from .document_index import DocumentIndex, StructuredDocument
 from .utility import mergeDictionaries, tf_idf
 
 class Index:

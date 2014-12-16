@@ -1,27 +1,39 @@
 from .utility import *
 import re
 
-class Document:
+class StructuredDocument:
     '''
-    Class representing one document for read access.
+    Class representing one structured document for read access.
     '''
     def __init__(self, content, indexConfig):
         self._config = indexConfig
         self._content = content
         self._getFieldPositions()
 
-    def getFieldContent(self, field):
+    def getFocusContent(self):
+        res = {}
+        for field in self._config.focusFields:
+            res[field] = self._getFieldContent(field)
+        return res
+
+    def getAllContent(self):
+        res = {}
+        for field in self._config.fields:
+            res[field] = self._getFieldContent(field)
+        return res
+
+    def getTitle(self):
+        result = self._getFieldContent(self._config.titleField).strip()
+        result = re.sub(r'(\s)+', r' ', result)
+        return result
+
+    def _getFieldContent(self, field):
         startPos = self.fieldPositions[field] + 1
         if (startPos <= 0):
             return ""
         nextFields = {v for (k,v) in self.fieldPositions.items() if v > startPos}
         stopPos = min(nextFields) if nextFields else len(self._content)
         return "\n".join(self._content[startPos:stopPos])
-
-    def getTitle(self):
-        result = self.getFieldContent(self._config.titleField).strip()
-        result = re.sub(r'(\s)+', r' ', result)
-        return result
 
     def _getFieldPositions(self):
         '''Populates fieldPositions = { 'fieldName': startPosition } dictionary.'''
@@ -30,28 +42,51 @@ class Document:
             self.fieldPositions[field] = next((i for i, l in enumerate(self._content) if l.startswith(field)), -1)
 
 
+class PlainDocument:
+    '''
+    Class representing a plain text (non structured) document for read access.
+    '''
+    def __init__(self, content):
+        self._content = content
+
+    def getAllContent(self):
+        return { 'all' : self._content }
+
+    def getFocusContent(self):
+        return self.getAllContent()
+
+
 class DocumentIndex:
     '''
     Class containing the indexing result for one document.
+    If provided with a indexConfig, the indexing will parse the document
+    and filter stop words. Otherwise, it will be done on the whole content.
     '''
-    def __init__(self, content, indexConfig):
-        self._config = indexConfig
+    def __init__(self, content, indexConfig = None):
         self.wordCount = {}
-        self._doc = Document(content, indexConfig)
+        if indexConfig:
+            self._config = indexConfig
+            self._doc = StructuredDocument(content, indexConfig)
+        else:
+            self._config = None
+            self._doc = PlainDocument(content)
         self._initIndex()
 
     def getWordCount(self):
         return self.wordCount
 
     def _initIndex(self):
-        for field in self._config.focusFields:
-            self.wordCount = mergeDictionaries(self.wordCount, self._getWordCount(field))
+        docContent = self._doc.getFocusContent()
+        for field in docContent:
+            fieldContent = docContent[field]
+            field_wc = self._computeWordCount(fieldContent)
+            self.wordCount = mergeDictionaries(self.wordCount, field_wc)
 
-    def _getWordCount(self, field):
-        fieldContent = self._doc.getFieldContent(field)
+    def _computeWordCount(self, fieldContent):
         return countTokens(self._tokenize(fieldContent))
 
     def _tokenize(self, content):
         tokens = getWordList(content)
-        tokens = filterWords(tokens, self._config.stopWords)
+        if self._config:
+            tokens = filterWords(tokens, self._config.stopWords)
         return tokens
