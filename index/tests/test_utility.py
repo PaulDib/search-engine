@@ -17,3 +17,17 @@ class UtilityTests(unittest.TestCase):
         b = { "key2": 4, "key3": 5 }
         expected = { "key1": 4, "key2": 9, "key3": 5 }
         self.assertEqual(expected, mergeDictionaries(a, b))
+
+    def test_flatten_single_depth(self):
+        dic = {"a": { "b" : [0, 1, 2], "c": 1 }}
+        flat = {"a.b": [0, 1, 2], "a.c": 1}
+        self.assertEqual(flat, flatten(dic))
+
+    def test_flatten_multiple_depth(self):
+        dic = {"a": { "b" : [0, 1, 2], "c": 1 }, "d": {"e": {"f": 5, "g": True}}}
+        flat = {"a.b": [0, 1, 2], "a.c": 1, "d.e.f": 5, "d.e.g": True}
+        self.assertEqual(flat, flatten(dic))
+
+    def test_tf_idf_simple_values(self):
+        self.assertEqual(0, tf_idf(0, 5, 10))
+        self.assertEqual(0, tf_idf(1, 1, 1))

@@ -1,5 +1,5 @@
 from .document_index import DocumentIndex, Document
-from .utility import mergeDictionaries
+from .utility import mergeDictionaries, tf_idf
 
 class Index:
     '''
@@ -38,6 +38,8 @@ class Index:
         else:
             raise TypeError("dataFiles should be a string or a list")
 
+        self._initStatistics()
+
     def _indexFile(self, file):
         '''Populating the index with the results for one file.'''
         with open(file) as f:
@@ -58,6 +60,14 @@ class Index:
             if docId != None:
                 self._saveDocumentLocation(docId, file, documentStartPos, i - 1)
                 self._addDocumentToIndex(docId, documentContent)
+
+    def _initStatistics(self):
+        number_of_docs = len(self._index)
+        for word in self._invertedIndex:
+            df = len(self._invertedIndex[word])
+            for doc in self._invertedIndex[word]:
+                tfidf = tf_idf(doc['count'], df, number_of_docs)
+                doc['weight'] = tfidf
 
     def _saveDocumentLocation(self, docId, file, startPos, endPos):
         '''Saves the position of the document in its file for later reads.'''
