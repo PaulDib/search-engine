@@ -2,6 +2,7 @@ import os
 import time
 from .index import Index
 from .index_config import IndexConfig
+from .index_serializer import IndexSerializer
 from .boolean_query import BooleanQuery
 from .command_line import CommandLine
 
@@ -16,7 +17,9 @@ class ReplClient:
         self._actions = {
             'createIndex': CreateIndexAction,
             'boolean': BooleanQueryAction,
-            'exit': EmptyAction
+            'exit': EmptyAction,
+            'saveIndex':  SaveIndexAction,
+            'loadIndex': LoadIndexAction
         }
         self._command_line = CommandLine(autocomplete_actions = self._actions.keys())
         self._startREPL()
@@ -58,11 +61,12 @@ class EmptyAction(Action):
     def execute(self):
         pass
 
+
 class CreateIndexAction(Action):
     def __init__(self, client, arguments):
         self._client = client
         if len(arguments) < 1 or len(arguments) > 2:
-            raise ValueError(CreateIndexAction.help())
+            raise ValueError(self.help())
         self._data_files = arguments[0].split(";")
         self._stop_words_file = arguments[2] if len(arguments) == 2 else ""
 
@@ -73,8 +77,7 @@ class CreateIndexAction(Action):
         self._client.index = Index(self._data_files, indexConfig)
         print("Index has been created in " + str(time.time() - t_start) + " seconds.")
 
-    @staticmethod
-    def help():
+    def help(self):
         return '''Wrong use.
         Example: createIndex data_file1;data_file2 stop_word_file'''
 
@@ -82,7 +85,7 @@ class CreateIndexAction(Action):
 class BooleanQueryAction(Action):
     def __init__(self, client, arguments):
         if not arguments:
-            raise ValueError(BooleanQueryAction.help())
+            raise ValueError(self.help())
         if not client.index:
             raise ValueError("Create or load an index first.")
         queryText = "".join(arguments)
@@ -104,7 +107,48 @@ class BooleanQueryAction(Action):
             print("\nMore than 10 results, the list has been truncated. Here is the full list of document ids:")
             print(docs)
 
-    @staticmethod
-    def help():
+    def help(self):
         return '''Wrong use.
         Example: boolean (word1 * !word2) + word3'''
+
+
+class SaveIndexAction(Action):
+    def __init__(self, client, arguments):
+        if not arguments:
+            raise ValueError(self.help())
+        if not client.index:
+            raise ValueError("Create or load an index first.")
+        self._index = client.index
+        self._path = arguments[0]
+
+    def execute(self):
+        print("Saving index...")
+        t0 = time.time()
+        IndexSerializer.saveToFile(self._index, self._path)
+        dur = time.time() - t0
+        print("Index saved in " + str(dur) + " seconds.")
+
+    def help(self):
+        return '''Wrong use.
+        Example: saveIndex path/to/output/file'''
+
+
+class LoadIndexAction(Action):
+    def __init__(self, client, arguments):
+        if not arguments:
+            raise ValueError(self.help())
+        if not client.index:
+            raise ValueError("Create or load an index first.")
+        self.client = client
+        self._path = arguments[0]
+
+    def execute(self):
+        print("Loading index...")
+        t0 = time.time()
+        client.index = IndexSerializer.loadFromFile(self._path)
+        dur = time.time() - t0
+        print("Index loaded in " + str(dur) + " seconds.")
+
+    def help(self):
+        return '''Wrong use.
+        Example: saveIndex path/to/output/file'''
