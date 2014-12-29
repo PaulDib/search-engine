@@ -25,20 +25,20 @@ class Index:
         '''Returns a dictionary of words with their frequency in a document'''
         return self._index[docId] if docId in self._index else {}
 
-    def getMatchingDocuments(self, documentWords):
+    def getMatchingDocuments(self, documentWords, weightKey = "norm_tfidf"):
         '''
         Returns documents similar to the input by computing the cosine of the
         input document to the collection.
         '''
         results = {}
         for word in documentWords:
-            weight_input = tf_idf(documentWords[word],
+            if word in self._invertedIndex:
+                weight_input = tf_idf(documentWords[word]['count'],
                                     self._documentFrequencies[word],
                                     self._number_of_docs)
-            if word in self._invertedIndex:
                 for doc in self._invertedIndex[word]:
                     docId = doc['docId']
-                    weight_doc = doc['weight']
+                    weight_doc = doc[weightKey]
                     if docId in results:
                         results[docId] = results[docId] + weight_doc*weight_input
                     else:
@@ -89,7 +89,14 @@ class Index:
             self._documentFrequencies[word] = df
             for doc in self._invertedIndex[word]:
                 tfidf = tf_idf(doc['count'], df, self._number_of_docs )
-                doc['weight'] = tfidf
+                doc['tfidf'] = tfidf
+            max_tfidf = max({doc['tfidf'] for doc in self._invertedIndex[word]})
+            if max_tfidf > 0:
+                for doc in self._invertedIndex[word]:
+                    doc['norm_tfidf'] = doc['tfidf'] / max_tfidf
+            else:
+                for doc in self._invertedIndex[word]:
+                    doc['norm_tfidf'] = doc['tfidf']
 
     def _saveDocumentLocation(self, docId, file, startPos, endPos):
         '''Saves the position of the document in its file for later reads.'''

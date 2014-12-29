@@ -10,25 +10,26 @@ class IndexTests(unittest.TestCase):
         Test the counts in the inverted index.
         Does not test the weights.
         '''
+        self.maxDiff = None
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         expected = {
-         'subtractions': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
+         'subtractions': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
          'language': [
-            {'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 2, 2)},
-            {'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 2, 2)}
+            {'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 2, 2), 'norm_tfidf': 0.0},
+            {'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 2, 2), 'norm_tfidf': 0.0}
          ],
-         'extraction': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'of': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'computers': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'for': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'algebraic': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 1, 2)}],
-         'repeated': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'digital': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'preliminary': [{'count': 2, 'norm_count': 1.0, 'docId': 1, 'weight': tf_idf(2, 1, 2)}],
-         'report': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 1, 2)}],
-         'international': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 1, 2)}],
-         'by': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'roots': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}]
+         'extraction': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'of': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'computers': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'for': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'algebraic': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'repeated': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'digital': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'preliminary': [{'count': 2, 'norm_count': 1.0, 'docId': 1, 'tfidf': tf_idf(2, 1, 2), 'norm_tfidf': 1.0}],
+         'report': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'international': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'by': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'roots': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}]
         }
         self.assertEqual(expected, index._invertedIndex)
 
@@ -41,27 +42,27 @@ class IndexTests(unittest.TestCase):
         config.stopWords = ['of', 'by','for']
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", config)
         expected = {
-         'subtractions': [{'count': 1, 'docId': 2, 'norm_count': 1.0, 'weight': tf_idf(1, 1, 2)}],
+         'subtractions': [{'count': 1, 'docId': 2, 'norm_count': 1.0, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
          'language': [
-            {'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 2, 2)},
-            {'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 2, 2)}
+            {'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 2, 2), 'norm_tfidf': 0.0},
+            {'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 2, 2), 'norm_tfidf': 0.0}
          ],
-         'extraction': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'computers': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'algebraic': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 1, 2)}],
-         'repeated': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'digital': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}],
-         'preliminary': [{'count': 2, 'norm_count': 1.0, 'docId': 1, 'weight': tf_idf(2, 1, 2)}],
-         'report': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 1, 2)}],
-         'international': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'weight': tf_idf(1, 1, 2)}],
-         'roots': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'weight': tf_idf(1, 1, 2)}]
+         'extraction': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'computers': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'algebraic': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'repeated': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'digital': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'preliminary': [{'count': 2, 'norm_count': 1.0, 'docId': 1, 'tfidf': tf_idf(2, 1, 2), 'norm_tfidf': 1.0}],
+         'report': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'international': [{'count': 1, 'norm_count': 0.5, 'docId': 1, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
+         'roots': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}]
         }
         self.assertEqual(expected, index._invertedIndex)
 
     def test_Search(self):
         expected = [
-            {'count': 1, 'docId': 1, 'norm_count': 0.5, 'weight': 0.0},
-            {'count': 1, 'docId': 2, 'norm_count': 1.0, 'weight': 0.0}
+            {'count': 1, 'docId': 1, 'norm_count': 0.5, 'tfidf': 0.0, 'norm_tfidf': 0},
+            {'count': 1, 'docId': 2, 'norm_count': 1.0, 'tfidf': 0.0, 'norm_tfidf': 0}
         ]
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         self.assertEqual([], index.search('thereShouldBeNoDocument'))
