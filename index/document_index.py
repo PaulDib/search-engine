@@ -64,6 +64,7 @@ class DocumentIndex:
     '''
     def __init__(self, content, indexConfig = None):
         self.wordCount = {}
+        self._maxWordCount = -1
         if indexConfig:
             self._config = indexConfig
             self._doc = StructuredDocument(content, indexConfig)
@@ -81,6 +82,9 @@ class DocumentIndex:
             fieldContent = docContent[field]
             field_wc = self._computeWordCount(fieldContent)
             self.wordCount = mergeDictionaries(self.wordCount, field_wc)
+            field_max = max(field_wc.values()) if field_wc else -1
+            self._maxWordCount = field_max if field_max > self._maxWordCount else self._maxWordCount
+        self.wordCount = { word: {'count': count, 'norm_count': count/self._maxWordCount } for word, count in self.wordCount.items() }
 
     def _computeWordCount(self, fieldContent):
         return countTokens(self._tokenize(fieldContent))

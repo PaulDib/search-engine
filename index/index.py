@@ -99,8 +99,8 @@ class Index:
         '''Populating the index with the result for one document.'''
         wordCount = DocumentIndex(content, self._config).getWordCount()
         self._index[docId]['words'] = wordCount
-        invertedWords = { word: [{'docId': docId, 'count': wordCount[word]}]
-            for word in wordCount if wordCount[word] > 0 }
+        invertedWords = { word: [{'docId': docId, 'count': wordCount[word]['count'], 'norm_count':  wordCount[word]['norm_count']}]
+            for word in wordCount if wordCount[word]['count'] > 0 }
         self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _getDocumentContent(self, docId):

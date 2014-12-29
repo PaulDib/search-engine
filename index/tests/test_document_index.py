@@ -21,7 +21,13 @@ class DocumentIndexTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_createIndex(self):
-        expected = {'report': 1, 'international': 1, 'algebraic': 1, 'language': 1, 'preliminary': 2}
+        expected = {
+            'algebraic': {'count': 1, 'norm_count': 0.5},
+            'international': {'count': 1, 'norm_count': 0.5},
+            'language': {'count': 1, 'norm_count': 0.5},
+            'preliminary': {'count': 2, 'norm_count': 1.0},
+            'report': {'count': 1, 'norm_count': 0.5}
+        }
         self.assertEqual(expected, self.docIndex.getWordCount())
 
     def test_getTitle(self):
@@ -32,7 +38,7 @@ class DocumentIndexTests(unittest.TestCase):
         ''' Test document indexing with a plain text document.'''
         plainText = "a b a"
         docIdx = DocumentIndex(plainText)
-        expected = { "a" : 2, "b": 1 }
+        expected = { "a" : {'count': 2, 'norm_count': 1.0}, "b": {'count': 1, 'norm_count': 0.5} }
         self.assertEqual(expected, docIdx.getWordCount())
 
     def test_PlainDocument_getFocusContent(self):

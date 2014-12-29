@@ -35,9 +35,15 @@ def countTokens(tokens):
     return result
 
 def tf_idf(tf, df, doc_nbr):
+    '''
+    Computes tf idf.
+    tf: frequency of a term in the document
+    df: number of documents that contain the term
+    doc_nbr: number of documents in the index
+    '''
     if tf == 0:
         return 0
-    return (1 + log(tf)/log(10)) * log(doc_nbr/df)/log(10)
+    return (log(tf + 1)/log(10)) * log(doc_nbr/df)/log(10)
 
 def flatten(dic):
     '''
