@@ -34,7 +34,12 @@ class _GetchWindows:
 
     def __call__(self):
         import msvcrt
-        return msvcrt.getch()
+        character = msvcrt.getch()
+        if character == b'\xe0': # escaped character (special key or arrow key)
+            return '\x1b'
+        elif character == b'\x08': # backspace key
+            return chr(127)
+        return character.decode('latin-1')
 
 
 getch = _Getch()

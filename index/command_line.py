@@ -44,17 +44,17 @@ class CommandLine:
         self._history = self._history + [self._buff]
 
     def _handleEscapedSequence(self):
-        nextChar = getch()
-        if nextChar == '[':
+        arrowChar = getch()
+        if arrowChar == '[':
             arrowChar = getch()
-            if arrowChar == 'A': # Up arrow
-                self._showPreviousCommand()
-            elif arrowChar == 'B': # Down arrow
-                self._showNextCommand()
-            elif arrowChar == 'C': # Right arrow
-                self._moveCursorRight()
-            elif arrowChar == 'D': # Left arrow
-                self._moveCursorLeft()
+        if arrowChar == 'A' or arrowChar == 'H': # Up arrow
+            self._showPreviousCommand()
+        elif arrowChar == 'B' or arrowChar == 'P': # Down arrow
+            self._showNextCommand()
+        elif arrowChar == 'C' or arrowChar == 'M': # Right arrow
+            self._moveCursorRight()
+        elif arrowChar == 'D' or arrowChar == 'K': # Left arrow
+            self._moveCursorLeft()
 
     def _showPreviousCommand(self):
         self._hist_ptr = self._hist_ptr - 1 if self._hist_ptr > 0 else 0
