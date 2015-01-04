@@ -90,13 +90,16 @@ class Index:
             for doc in self._invertedIndex[word]:
                 tfidf = tf_idf(doc['count'], df, self._number_of_docs )
                 doc['tfidf'] = tfidf
+                self._index[doc['docId']]['words'][word]['tfidf'] = tfidf
             max_tfidf = max({doc['tfidf'] for doc in self._invertedIndex[word]})
             if max_tfidf > 0:
                 for doc in self._invertedIndex[word]:
                     doc['norm_tfidf'] = doc['tfidf'] / max_tfidf
+                    self._index[doc['docId']]['words'][word]['norm_tfidf'] = doc['tfidf'] / max_tfidf
             else:
                 for doc in self._invertedIndex[word]:
                     doc['norm_tfidf'] = doc['tfidf']
+                    self._index[doc['docId']]['words'][word]['norm_tfidf'] = doc['tfidf']
 
     def _saveDocumentLocation(self, docId, file, startPos, endPos):
         '''Saves the position of the document in its file for later reads.'''

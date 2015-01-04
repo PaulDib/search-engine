@@ -1,5 +1,5 @@
 import re
-from math import log
+from math import log, sqrt
 
 def filterWords(wordList, stopWords):
     return [x for x in wordList if x not in stopWords]
@@ -62,3 +62,12 @@ def flatten(dic):
         else:
             res[key] = dic[key]
     return res
+
+def norm(word_dict, weight_key):
+    '''
+    Computes the norm of a word vector. 
+    '''
+    _sum = 0
+    for word in word_dict:
+        _sum = _sum + word_dict[word][weight_key]*word_dict[word][weight_key]
+    return sqrt(_sum)

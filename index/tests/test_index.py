@@ -10,7 +10,6 @@ class IndexTests(unittest.TestCase):
         Test the counts in the inverted index.
         Does not test the weights.
         '''
-        self.maxDiff = None
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         expected = {
          'subtractions': [{'count': 1, 'norm_count': 1.0, 'docId': 2, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}],
@@ -76,11 +75,11 @@ class IndexTests(unittest.TestCase):
             'file': data_path,
             'start': 0,
             'words': {
-                'algebraic': {'count': 1, 'norm_count': 0.5},
-                'international': {'count': 1, 'norm_count': 0.5},
-                'language': {'count': 1, 'norm_count': 0.5},
-                'preliminary': {'count': 2, 'norm_count': 1.0},
-                'report': {'count': 1, 'norm_count': 0.5}
+                'algebraic': {'count': 1, 'norm_count': 0.5, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0},
+                'international': {'count': 1, 'norm_count': 0.5, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0},
+                'language': {'count': 1, 'norm_count': 0.5,'tfidf': tf_idf(1, 2, 2), 'norm_tfidf': 0.0},
+                'preliminary': {'count': 2, 'norm_count': 1.0, 'tfidf': tf_idf(2, 1, 2), 'norm_tfidf': 1.0},
+                'report': {'count': 1, 'norm_count': 0.5, 'tfidf': tf_idf(1, 1, 2), 'norm_tfidf': 1.0}
             }
         }
         self.assertEqual({}, index.indexByDocId(404))

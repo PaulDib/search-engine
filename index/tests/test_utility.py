@@ -31,3 +31,7 @@ class UtilityTests(unittest.TestCase):
     def test_tf_idf_simple_values(self):
         self.assertEqual(0, tf_idf(0, 5, 10))
         self.assertEqual(0, tf_idf(1, 1, 1))
+
+    def test_norm(self):
+        vectorA = {'a' : { 'count': 0.5 }, 'b' : { 'count': 0.5 }, 'c' : { 'count': 0.5 }, 'd' : { 'count': 0.5 }}
+        self.assertEqual(1.0, norm(vectorA, 'count'))
