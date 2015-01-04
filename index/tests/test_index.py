@@ -69,10 +69,11 @@ class IndexTests(unittest.TestCase):
         self.assertEqual(expected, index.search('Language'))
 
     def test_IndexByDocId(self):
-        index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data")
+        index = Index(data_path, IndexConfig())
         expected =  {
             'end': 44,
-            'file': '/home/paul/cours/riw/projet/index/tests/test_data',
+            'file': data_path,
             'start': 0,
             'words': {
                 'algebraic': {'count': 1, 'norm_count': 0.5},
