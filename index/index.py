@@ -26,7 +26,7 @@ class Index:
         '''Returns a dictionary of words with their frequency in a document'''
         return self._index[docId] if docId in self._index else {}
 
-    def getMatchingDocuments(self, documentWords, weight_key = "norm_tfidf"):
+    def getMatchingDocuments(self, documentWords, weight_key = NORM_TFIDF):
         '''
         Returns documents similar to the input by computing the cosine of the
         input document to the collection.
