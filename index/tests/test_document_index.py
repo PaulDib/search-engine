@@ -2,6 +2,7 @@ import unittest
 import os
 from index.document_index import DocumentIndex, StructuredDocument, PlainDocument
 from index.index_config import IndexConfig
+from index.constants import *
 
 class DocumentIndexTests(unittest.TestCase):
     def setUp(self):
@@ -22,11 +23,11 @@ class DocumentIndexTests(unittest.TestCase):
 
     def test_createIndex(self):
         expected = {
-            'algebraic': {'count': 1, 'norm_count': 0.5},
-            'international': {'count': 1, 'norm_count': 0.5},
-            'language': {'count': 1, 'norm_count': 0.5},
-            'preliminary': {'count': 2, 'norm_count': 1.0},
-            'report': {'count': 1, 'norm_count': 0.5}
+            'algebraic': {COUNT: 1, NORM_COUNT: 0.5},
+            'international': {COUNT: 1, NORM_COUNT: 0.5},
+            'language': {COUNT: 1, NORM_COUNT: 0.5},
+            'preliminary': {COUNT: 2, NORM_COUNT: 1.0},
+            'report': {COUNT: 1, NORM_COUNT: 0.5}
         }
         self.assertEqual(expected, self.docIndex.getWordCount())
 
@@ -38,7 +39,7 @@ class DocumentIndexTests(unittest.TestCase):
         ''' Test document indexing with a plain text document.'''
         plainText = "a b a"
         docIdx = DocumentIndex(plainText)
-        expected = { "a" : {'count': 2, 'norm_count': 1.0}, "b": {'count': 1, 'norm_count': 0.5} }
+        expected = { "a" : {COUNT: 2, NORM_COUNT: 1.0}, "b": {COUNT: 1, NORM_COUNT: 0.5} }
         self.assertEqual(expected, docIdx.getWordCount())
 
     def test_PlainDocument_getFocusContent(self):

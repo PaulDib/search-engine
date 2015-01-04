@@ -1,4 +1,5 @@
 from .utility import *
+from .constants import *
 import re
 
 class StructuredDocument:
@@ -84,7 +85,7 @@ class DocumentIndex:
             self.wordCount = mergeDictionaries(self.wordCount, field_wc)
             field_max = max(field_wc.values()) if field_wc else -1
             self._maxWordCount = field_max if field_max > self._maxWordCount else self._maxWordCount
-        self.wordCount = { word: {'count': count, 'norm_count': count/self._maxWordCount } for word, count in self.wordCount.items() }
+        self.wordCount = { word: { COUNT: count, NORM_COUNT: count/self._maxWordCount } for word, count in self.wordCount.items() }
 
     def _computeWordCount(self, fieldContent):
         return countTokens(self._tokenize(fieldContent))

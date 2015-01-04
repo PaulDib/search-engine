@@ -1,5 +1,6 @@
 from .document_index import DocumentIndex, StructuredDocument
-from .utility import mergeDictionaries, tf_idf
+from .utility import mergeDictionaries, tf_idf, norm
+from .constants import *
 
 class Index:
     '''
@@ -25,7 +26,7 @@ class Index:
         '''Returns a dictionary of words with their frequency in a document'''
         return self._index[docId] if docId in self._index else {}
 
-    def getMatchingDocuments(self, documentWords, weightKey = "norm_tfidf"):
+    def getMatchingDocuments(self, documentWords, weight_key = "norm_tfidf"):
         '''
         Returns documents similar to the input by computing the cosine of the
         input document to the collection.
@@ -33,16 +34,21 @@ class Index:
         results = {}
         for word in documentWords:
             if word in self._invertedIndex:
-                weight_input = tf_idf(documentWords[word]['count'],
+                weight_input = tf_idf(documentWords[word][COUNT],
                                     self._documentFrequencies[word],
                                     self._number_of_docs)
+                documentWords[word][weight_key] = weight_input
                 for doc in self._invertedIndex[word]:
-                    docId = doc['docId']
-                    weight_doc = doc[weightKey]
+                    docId = doc[DOCID]
+                    weight_doc = doc[weight_key]
                     if docId in results:
                         results[docId] = results[docId] + weight_doc*weight_input
                     else:
                         results[docId] = weight_doc*weight_input
+        queryNorm = norm(documentWords, weight_key)
+        for docId in results:
+            resultNorm = norm(self._index[docId][WORDS], weight_key)
+            results[docId] = results[docId] / (resultNorm*queryNorm)
         return results
 
     def getAllDocIds(self):
@@ -82,35 +88,36 @@ class Index:
                 self._addDocumentToIndex(docId, documentContent)
 
     def _initStatistics(self):
+        # TODO: Refactor
         self._documentFrequencies = {}
         self._number_of_docs = len(self._index)
         for word in self._invertedIndex:
             df = len(self._invertedIndex[word])
             self._documentFrequencies[word] = df
             for doc in self._invertedIndex[word]:
-                tfidf = tf_idf(doc['count'], df, self._number_of_docs )
-                doc['tfidf'] = tfidf
-                self._index[doc['docId']]['words'][word]['tfidf'] = tfidf
-            max_tfidf = max({doc['tfidf'] for doc in self._invertedIndex[word]})
+                tfidf = tf_idf(doc[COUNT], df, self._number_of_docs )
+                doc[TFIDF] = tfidf
+                self._index[doc[DOCID]][WORDS][word][TFIDF] = tfidf
+            max_tfidf = max({doc[TFIDF] for doc in self._invertedIndex[word]})
             if max_tfidf > 0:
                 for doc in self._invertedIndex[word]:
-                    doc['norm_tfidf'] = doc['tfidf'] / max_tfidf
-                    self._index[doc['docId']]['words'][word]['norm_tfidf'] = doc['tfidf'] / max_tfidf
+                    doc[NORM_TFIDF] = doc[TFIDF] / max_tfidf
+                    self._index[doc[DOCID]][WORDS][word][NORM_TFIDF] = doc[TFIDF] / max_tfidf
             else:
                 for doc in self._invertedIndex[word]:
-                    doc['norm_tfidf'] = doc['tfidf']
-                    self._index[doc['docId']]['words'][word]['norm_tfidf'] = doc['tfidf']
+                    doc[NORM_TFIDF] = doc[TFIDF]
+                    self._index[doc[DOCID]][WORDS][word][NORM_TFIDF] = doc[TFIDF]
 
     def _saveDocumentLocation(self, docId, file, startPos, endPos):
         '''Saves the position of the document in its file for later reads.'''
-        self._index[docId] = { "file": file, "start": startPos, "end": endPos }
+        self._index[docId] = { FILE: file, START: startPos, END: endPos }
 
     def _addDocumentToIndex(self, docId, content):
         '''Populating the index with the result for one document.'''
         wordCount = DocumentIndex(content, self._config).getWordCount()
-        self._index[docId]['words'] = wordCount
-        invertedWords = { word: [{'docId': docId, 'count': wordCount[word]['count'], 'norm_count':  wordCount[word]['norm_count']}]
-            for word in wordCount if wordCount[word]['count'] > 0 }
+        self._index[docId][WORDS] = wordCount
+        invertedWords = { word: [{DOCID: docId, COUNT: wordCount[word][COUNT], NORM_COUNT:  wordCount[word][NORM_COUNT]}]
+            for word in wordCount if wordCount[word][COUNT] > 0 }
         self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _getDocumentContent(self, docId):
@@ -118,9 +125,9 @@ class Index:
         if docId in self._index:
             content = []
             docInfo = self._index[docId]
-            with open(docInfo["file"]) as f:
+            with open(docInfo[FILE]) as f:
                 for i, line in enumerate(f):
-                    if i >= docInfo["start"] and i <= docInfo["end"]:
+                    if i >= docInfo[START] and i <= docInfo[END]:
                         content = content + [line]
             return content
         raise ValueError("doc "+ docId + " not found")
