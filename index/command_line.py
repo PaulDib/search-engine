@@ -18,7 +18,7 @@ class CommandLine:
         '''
         char = ''
         self._initBuffer()
-        print(prompt, end="", flush = True)
+        print(prompt, end="", flush=True)
         while True:
             char = getch()
             self._old_len = len(self._buff)

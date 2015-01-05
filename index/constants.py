@@ -1,3 +1,7 @@
+'''
+Defines package constants.
+'''
+
 FILE = 'file'
 DOCID = 'docId'
 COUNT = 'count'
