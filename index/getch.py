@@ -16,6 +16,10 @@ class _Getch:
 
 class _GetchUnix:
 
+    """
+    Gets a single character from UNIX standard input.  Does not echo to the screen.
+    """
+
     def __init__(self):
         import tty
         import sys
@@ -24,17 +28,21 @@ class _GetchUnix:
         import sys
         import tty
         import termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
+        file_descriptor = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(file_descriptor)
         try:
             tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
+            character = sys.stdin.read(1)
         finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
+            termios.tcsetattr(file_descriptor, termios.TCSADRAIN, old_settings)
+        return character
 
 
 class _GetchWindows:
+
+    """
+    Gets a single character from Windows standard input.  Does not echo to the screen.
+    """
 
     def __init__(self):
         import msvcrt

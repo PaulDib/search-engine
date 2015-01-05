@@ -1,3 +1,6 @@
+'''
+Provides a REPL client for the index package.
+'''
 import os
 import time
 import traceback
@@ -9,7 +12,7 @@ from .vectorial_query import VectorialQuery
 from .command_line import CommandLine
 
 
-class ReplClient:
+class ReplClient(object):
 
     '''Read-Eval-Print-Loop client for the index.'''
 
@@ -29,39 +32,47 @@ class ReplClient:
         }
         self._command_line = CommandLine(
             autocomplete_actions=self._actions.keys())
-        self._startREPL()
+        self._start_repl()
 
-    def _startREPL(self):
-        usrInput = ""
+    def _start_repl(self):
+        '''Starts the REPL and prompts the user.'''
+        user_input = ""
         print(
             "Starting interactive environment in directory " + self._working_dir)
-        while(usrInput != "exit"):
-            usrInput = self._command_line.readInput("> ")
-            if not usrInput:
+        while user_input != "exit":
+            user_input = self._command_line.read_input("> ")
+            if not user_input:
                 continue
             try:
-                action = self._parseInput(usrInput)
+                action = self._parse_input(user_input)
                 action.execute()
-            except Exception as e:
-                print("Error: " + str(e))
+            except Exception as exc:
+                print("Error: " + str(exc))
                 print(traceback.format_exc())
         print("Exiting...")
 
-    def _parseInput(self, usrInput):
-        split = usrInput.split()
+    def _parse_input(self, user_input):
+        split = user_input.split()
         command = split[0]
         arguments = split[1:] if len(split) > 1 else []
         if command in self._actions:
-            actionFactory = self._actions[command]
-            return actionFactory(self, arguments)
+            action_factory = self._actions[command]
+            return action_factory(self, arguments)
         else:
             raise ValueError("<" + command + "> unknown command.")
 
 
-class Action:
+class Action(object):
+
+    '''Abstract action for the REPL client.'''
 
     def execute(self):
+        '''Executes the action a prints results to the user.'''
         raise NotImplementedError("Wrong action.")
+
+    def help(self):
+        '''Display help text to the user regarding this action.'''
+        pass
 
 
 class EmptyAction(Action):
@@ -83,10 +94,10 @@ class CreateIndexAction(Action):
         self._stop_words_file = arguments[2] if len(arguments) == 2 else ""
 
     def execute(self):
-        indexConfig = IndexConfig(self._stop_words_file)
+        index_config = IndexConfig(self._stop_words_file)
         print("Indexing files...")
         t_start = time.time()
-        self._client.index = Index(self._data_files, indexConfig)
+        self._client.index = Index(self._data_files, index_config)
         print("Index has been created in " +
               str(time.time() - t_start) + " seconds.")
 
@@ -102,8 +113,8 @@ class BooleanQueryAction(Action):
             raise ValueError(self.help())
         if not client.index:
             raise ValueError("Create or load an index first.")
-        queryText = "".join(arguments)
-        self._query = BooleanQuery(queryText)
+        query_text = "".join(arguments)
+        self._query = BooleanQuery(query_text)
         self._query.set_index(client.index)
         self.index = client.index
 
@@ -113,14 +124,14 @@ class BooleanQueryAction(Action):
         duration = time.time() - t_start
         print("Query executed in " + str(duration) +
               " seconds and returned " + str(len(docs)) + " results.")
-        it = iter(docs)
+        iterator = iter(docs)
         for i in range(0, min(len(docs), 10)):
-            docId = next(it)
-            document = self.index.documentById(docId)
-            print("<" + str(docId) + "> - " + document.get_title())
+            doc_id = next(iterator)
+            document = self.index.documentById(doc_id)
+            print("<" + str(doc_id) + "> - " + document.get_title())
         if len(docs) > 10:
-            print(
-                "More than 10 results, the list has been truncated. Here is the full list of document ids:")
+            print("More than 10 results, the list has been truncated. \
+                Here is the full list of document ids:")
             print(docs)
 
     def help(self):
@@ -135,8 +146,8 @@ class VectorialQueryAction(Action):
             raise ValueError(self.help())
         if not client.index:
             raise ValueError("Create or load an index first.")
-        queryText = " ".join(arguments)
-        self._query = VectorialQuery(queryText)
+        query_text = " ".join(arguments)
+        self._query = VectorialQuery(query_text)
         self.index = client.index
 
     def execute(self):
@@ -145,12 +156,12 @@ class VectorialQueryAction(Action):
         duration = time.time() - t_start
         print("Query executed in " + str(duration) +
               " seconds and returned " + str(len(docs)) + " results.")
-        for (k, v) in docs[0:10]:
+        for (k, value) in docs[0:10]:
             document = self.index.documentById(k)
             print("<" + str(k) + "> - " + document.get_title())
         if len(docs) > 10:
-            print(
-                "More than 10 results, the list has been truncated. Here is the full list of document ids:")
+            print("More than 10 results, the list has been truncated. \
+                Here is the full list of document ids:")
         print(docs)
 
     def help(self):
@@ -170,9 +181,9 @@ class SaveIndexAction(Action):
 
     def execute(self):
         print("Saving index...")
-        t0 = time.time()
+        start_time = time.time()
         IndexSerializer.save_to_file(self._index, self._path)
-        dur = time.time() - t0
+        dur = time.time() - start_time
         print("Index saved in " + str(dur) + " seconds.")
 
     def help(self):
@@ -190,9 +201,9 @@ class LoadIndexAction(Action):
 
     def execute(self):
         print("Loading index...")
-        t0 = time.time()
+        start_time = time.time()
         self._client.index = IndexSerializer.load_from_file(self._path)
-        dur = time.time() - t0
+        dur = time.time() - start_time
         print("Index loaded in " + str(dur) + " seconds.")
 
     def help(self):
