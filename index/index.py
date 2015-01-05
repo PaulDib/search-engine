@@ -11,7 +11,7 @@ class Index:
         self._dataFiles = dataFiles
         self._index = {}
         self._invertedIndex = {}
-        self._initIndex()
+        self._init_index()
 
     def search(self, word):
         '''Returns a list of docIds containing the requested word.'''
@@ -86,7 +86,7 @@ class Index:
     def _computeNormCountForWord(self, word, vector):
         return vector[word][NORM_COUNT]
 
-    def _initIndex(self):
+    def _init_index(self):
         if isinstance(self._dataFiles, str):
             self._indexFile(self._dataFiles)
         elif  type(self._dataFiles) is list:
@@ -145,10 +145,10 @@ class Index:
 
     def _addDocumentToIndex(self, docId, content):
         '''Populating the index with the result for one document.'''
-        wordCount = DocumentIndex(content, self._config).getWordCount()
-        self._index[docId][WORDS] = wordCount
-        invertedWords = { word: [{DOCID: docId, COUNT: wordCount[word][COUNT], NORM_COUNT:  wordCount[word][NORM_COUNT]}]
-            for word in wordCount if wordCount[word][COUNT] > 0 }
+        word_count = DocumentIndex(content, self._config).get_word_count()
+        self._index[docId][WORDS] = word_count
+        invertedWords = { word: [{DOCID: docId, COUNT: word_count[word][COUNT], NORM_COUNT:  word_count[word][NORM_COUNT]}]
+            for word in word_count if word_count[word][COUNT] > 0 }
         self._invertedIndex = mergeDictionaries(self._invertedIndex, invertedWords)
 
     def _getDocumentContent(self, docId):

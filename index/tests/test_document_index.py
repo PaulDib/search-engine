@@ -29,7 +29,7 @@ class DocumentIndexTests(unittest.TestCase):
             'preliminary': {COUNT: 2, NORM_COUNT: 1.0},
             'report': {COUNT: 1, NORM_COUNT: 0.5}
         }
-        self.assertEqual(expected, self.docIndex.getWordCount())
+        self.assertEqual(expected, self.docIndex.get_word_count())
 
     def test_get_title(self):
         expected = "Preliminary Report-International Algebraic Language preliminary"
@@ -40,7 +40,7 @@ class DocumentIndexTests(unittest.TestCase):
         plainText = "a b a"
         docIdx = DocumentIndex(plainText)
         expected = { "a" : {COUNT: 2, NORM_COUNT: 1.0}, "b": {COUNT: 1, NORM_COUNT: 0.5} }
-        self.assertEqual(expected, docIdx.getWordCount())
+        self.assertEqual(expected, docIdx.get_word_count())
 
     def test_PlainDocument_get_focus_content(self):
         plainText = "a b a"

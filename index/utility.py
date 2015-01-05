@@ -24,7 +24,7 @@ def getWordList(content):
     wordList = [x.lower() for x in wordList]
     return wordList
 
-def countTokens(tokens):
+def count_tokens(tokens):
     '''Given a list of elements, counts the number of occurences of each element as a dictionary.'''
     result = {}
     for token in tokens:
