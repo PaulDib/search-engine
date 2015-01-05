@@ -155,7 +155,7 @@ class SaveIndexAction(Action):
     def execute(self):
         print("Saving index...")
         t0 = time.time()
-        IndexSerializer.saveToFile(self._index, self._path)
+        IndexSerializer.save_to_file(self._index, self._path)
         dur = time.time() - t0
         print("Index saved in " + str(dur) + " seconds.")
 
@@ -174,7 +174,7 @@ class LoadIndexAction(Action):
     def execute(self):
         print("Loading index...")
         t0 = time.time()
-        self._client.index = IndexSerializer.loadFromFile(self._path)
+        self._client.index = IndexSerializer.load_from_file(self._path)
         dur = time.time() - t0
         print("Index loaded in " + str(dur) + " seconds.")
 
