@@ -63,11 +63,12 @@ def flatten(dic):
             res[key] = dic[key]
     return res
 
-def norm(word_dict, weight_key):
+def norm(word_dict, weight_key = ""):
     '''
-    Computes the norm of a word vector. 
+    Computes the norm of a word vector.
     '''
     _sum = 0
     for word in word_dict:
-        _sum = _sum + word_dict[word][weight_key]*word_dict[word][weight_key]
+        value = word_dict[word][weight_key] if weight_key else word_dict[word]
+        _sum = _sum + value*value
     return sqrt(_sum)

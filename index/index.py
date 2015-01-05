@@ -32,16 +32,23 @@ class Index:
         input document to the collection, using a specific weight as components
         of the vectors.
         '''
+        queryVector = self._computeQueryVector(documentWords, self._computeTfidfForWord)
+        results = self._scalarProductWithIndex(queryVector, weight_key)
+        results = self._normalizeResults(queryVector, results, weight_key)
+        return results
+
+    def getAllDocIds(self):
+        '''Returns a list with all doc ids in the index'''
+        return [docId for docId in self._index]
+
+    def _scalarProductWithIndex(self, queryVector, weight_key):
+        '''
+        Computes the scalar product between a query vector and the indexed docs.
+        '''
         results = {}
-        for word in documentWords:
-            if word in self._documentFrequencies:
-                weight_input = tf_idf(documentWords[word][COUNT], self._documentFrequencies[word], self._number_of_docs)
-                documentWords[word][weight_key] = weight_input
-            else:
-                documentWords[word][weight_key] = 0.0
-        for word in documentWords:
+        for word in queryVector:
             if word in self._invertedIndex:
-                weight_input = documentWords[word][weight_key]
+                weight_input = queryVector[word]
                 for doc in self._invertedIndex[word]:
                     docId = doc[DOCID]
                     weight_doc = doc[weight_key]
@@ -49,15 +56,35 @@ class Index:
                         results[docId] = results[docId] + weight_doc*weight_input
                     else:
                         results[docId] = weight_doc*weight_input
-        queryNorm = norm(documentWords, weight_key)
+        return results
+
+    def _normalizeResults(self, queryVector, results, weight_key):
+        '''
+        Divide results by the norm of the two input vectors.
+        '''
+        queryNorm = norm(queryVector)
         for docId in results:
             resultNorm = norm(self._index[docId][WORDS], weight_key)
             results[docId] = results[docId] / (resultNorm*queryNorm)
         return results
 
-    def getAllDocIds(self):
-        '''Returns a list with all doc ids in the index'''
-        return [docId for docId in self._index]
+    def _computeQueryVector(self, queryWords, statisticFunction):
+        queryVector = {}
+        for word in queryWords:
+            queryVector[word] = statisticFunction(word, queryWords)
+        return queryVector
+
+    def _computeTfidfForWord(self, word, vector):
+        if word in self._documentFrequencies:
+            weight_input = tf_idf(vector[word][COUNT],
+                                self._documentFrequencies[word],
+                                self._number_of_docs)
+            return weight_input
+        else:
+            return 0.0
+
+    def _computeNormCountForWord(self, word, vector):
+        return vector[word][NORM_COUNT]
 
     def _initIndex(self):
         if isinstance(self._dataFiles, str):
