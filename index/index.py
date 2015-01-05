@@ -1,6 +1,6 @@
 '''
 Main entry point of the package.
-Provides the Index class that is able to index a collection 
+Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
 from .document_index import DocumentIndex, StructuredDocument
@@ -64,8 +64,7 @@ class Index:
                     doc_id = doc[DOC_ID]
                     weight_doc = doc[weight_key]
                     if doc_id in results:
-                        results[doc_id] = results[
-                            doc_id] + weight_doc * weight_input
+                        results[doc_id] = results[doc_id] + weight_doc * weight_input
                     else:
                         results[doc_id] = weight_doc * weight_input
         return results
@@ -166,7 +165,11 @@ class Index:
         word_count = DocumentIndex(content, self._config).get_word_count()
         self._index[doc_id][WORDS] = word_count
         inverted_words = {
-            word: [{DOC_ID: doc_id, COUNT: word_count[word][COUNT], NORM_COUNT:  word_count[word][NORM_COUNT]}]
+            word: [{
+                DOC_ID: doc_id, 
+                COUNT: word_count[word][COUNT], 
+                NORM_COUNT:  word_count[word][NORM_COUNT]
+            }]
             for word in word_count if word_count[word][COUNT] > 0
         }
         self._inverted_index = merge_dictionaries(
