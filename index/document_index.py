@@ -1,63 +1,71 @@
-from .utility import *
-from .constants import *
+'''
+Provides classes to index single documents.
+'''
+from .utility import getWordList, countTokens, mergeDictionaries, filterWords
+from .constants import COUNT, NORM_COUNT
 import re
 
-class StructuredDocument:
+class StructuredDocument(object):
     '''
     Class representing one structured document for read access.
     '''
     def __init__(self, content, indexConfig):
         self._config = indexConfig
         self._content = content
-        self._getFieldPositions()
+        self.field_positions = {}
+        self._get_field_positions()
 
-    def getFocusContent(self):
+    def get_focus_content(self):
         res = {}
         for field in self._config.focusFields:
-            res[field] = self._getFieldContent(field)
+            res[field] = self._get_field_content(field)
         return res
 
-    def getAllContent(self):
+    def get_all_content(self):
         res = {}
         for field in self._config.fields:
-            res[field] = self._getFieldContent(field)
+            res[field] = self._get_field_content(field)
         return res
 
-    def getTitle(self):
-        result = self._getFieldContent(self._config.titleField).strip()
+    def get_title(self):
+        result = self._get_field_content(self._config.titleField).strip()
         result = re.sub(r'(\s)+', r' ', result)
         return result
 
-    def _getFieldContent(self, field):
-        startPos = self.fieldPositions[field] + 1
-        if (startPos <= 0):
+    def _get_field_content(self, field):
+        start_pos = self.field_positions[field] + 1
+        if start_pos <= 0:
             return ""
-        nextFields = {v for (k,v) in self.fieldPositions.items() if v > startPos}
-        stopPos = min(nextFields) if nextFields else len(self._content)
-        return "\n".join(self._content[startPos:stopPos])
+        next_fields = {v \
+            for (k, v) in self.field_positions.items() if v > start_pos}
+        stop_pos = min(next_fields) if next_fields else len(self._content)
+        return "\n".join(self._content[start_pos:stop_pos])
 
-    def _getFieldPositions(self):
-        '''Populates fieldPositions = { 'fieldName': startPosition } dictionary.'''
-        self.fieldPositions = {}
+    def _get_field_positions(self):
+        '''
+        Populates field_positions = { 'fieldName': start_position } dictionary.
+        '''
+        self.field_positions = {}
         for field in self._config.fields:
-            self.fieldPositions[field] = next((i for i, l in enumerate(self._content) if l.startswith(field)), -1)
+            self.field_positions[field] = next((i for i, l \
+                in enumerate(self._content) if l.startswith(field)), -1)
 
 
-class PlainDocument:
+class PlainDocument(object):
     '''
     Class representing a plain text (non structured) document for read access.
     '''
     def __init__(self, content):
         self._content = content
 
-    def getAllContent(self):
+    def get_all_content(self):
         return { 'all' : self._content }
 
-    def getFocusContent(self):
-        return self.getAllContent()
+    def get_focus_content(self):
+        return self.get_all_content()
 
 
-class DocumentIndex:
+class DocumentIndex(object):
     '''
     Class containing the indexing result for one document.
     If provided with a indexConfig, the indexing will parse the document
@@ -78,7 +86,7 @@ class DocumentIndex:
         return self.wordCount
 
     def _initIndex(self):
-        docContent = self._doc.getFocusContent()
+        docContent = self._doc.get_focus_content()
         for field in docContent:
             fieldContent = docContent[field]
             field_wc = self._computeWordCount(fieldContent)

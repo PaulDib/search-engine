@@ -106,16 +106,16 @@ class Index:
                 if line.startswith(self._config.idMarker):
                     if docId != None:
                         # Indexing previous document
-                        self._saveDocumentLocation(docId, file, documentStartPos, i - 1)
+                        self._saveDocumentLocation(docId, file, documentstart_pos, i - 1)
                         self._addDocumentToIndex(docId, documentContent)
                     docId = int(line[len(self._config.idMarker):])
-                    documentStartPos = i
+                    documentstart_pos = i
                     documentContent = []
                 documentContent = documentContent + [line]
 
             # Handling last document.
             if docId != None:
-                self._saveDocumentLocation(docId, file, documentStartPos, i - 1)
+                self._saveDocumentLocation(docId, file, documentstart_pos, i - 1)
                 self._addDocumentToIndex(docId, documentContent)
 
     def _initStatistics(self):
@@ -139,9 +139,9 @@ class Index:
                     doc[NORM_TFIDF] = doc[TFIDF]
                     self._index[doc[DOCID]][WORDS][word][NORM_TFIDF] = doc[TFIDF]
 
-    def _saveDocumentLocation(self, docId, file, startPos, endPos):
+    def _saveDocumentLocation(self, docId, file, start_pos, endPos):
         '''Saves the position of the document in its file for later reads.'''
-        self._index[docId] = { FILE: file, START: startPos, END: endPos }
+        self._index[docId] = { FILE: file, START: start_pos, END: endPos }
 
     def _addDocumentToIndex(self, docId, content):
         '''Populating the index with the result for one document.'''
