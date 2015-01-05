@@ -9,9 +9,9 @@ class DocumentIndexTests(unittest.TestCase):
 
     def setUp(self):
         with open(os.path.dirname(os.path.realpath(__file__)) + "/test_data") as file:
-            self.testContent = file.read().splitlines()
-        self.docIndex = DocumentIndex(self.testContent, IndexConfig())
-        self.doc = StructuredDocument(self.testContent, IndexConfig())
+            self.test_content = file.read().splitlines()
+        self.doc_index = DocumentIndex(self.test_content, IndexConfig())
+        self.doc = StructuredDocument(self.test_content, IndexConfig())
 
     def test_get_field_positions(self):
         expected = {'.A': 5, '.B': 3, '.I': 0, '.K': -1,
@@ -19,12 +19,12 @@ class DocumentIndexTests(unittest.TestCase):
         actual = self.doc.field_positions
         self.assertEqual(expected, actual)
 
-    def test_structuredDocument_get_all_content(self):
+    def test_structured_document_get_all_content(self):
         expected = "Perlis, A. J.\nSamelson,K."
         actual = self.doc.get_all_content()['.A']
         self.assertEqual(expected, actual)
 
-    def test_createIndex(self):
+    def test_create_index(self):
         expected = {
             'algebraic': {COUNT: 1, NORM_COUNT: 0.5},
             'international': {COUNT: 1, NORM_COUNT: 0.5},
@@ -32,21 +32,30 @@ class DocumentIndexTests(unittest.TestCase):
             'preliminary': {COUNT: 2, NORM_COUNT: 1.0},
             'report': {COUNT: 1, NORM_COUNT: 0.5}
         }
-        self.assertEqual(expected, self.docIndex.get_word_count())
+        self.assertEqual(expected, self.doc_index.get_word_count())
 
     def test_get_title(self):
+        '''Tests the get_title function.'''
         expected = "Preliminary Report-International Algebraic Language preliminary"
         self.assertEqual(expected, self.doc.get_title())
 
-    def test_documentIndex_plainText(self):
+    def test_document_index_plain_text(self):
         ''' Test document indexing with a plain text document.'''
-        plainText = "a b a"
-        doc_idx = DocumentIndex(plainText)
+        plain_text = "a b a"
+        doc_idx = DocumentIndex(plain_text)
         expected = {"a": {COUNT: 2, NORM_COUNT: 1.0},
                     "b": {COUNT: 1, NORM_COUNT: 0.5}}
         self.assertEqual(expected, doc_idx.get_word_count())
 
-    def test_PlainDocument_get_focus_content(self):
-        plainText = "a b a"
-        plainDoc = PlainDocument(plainText)
-        self.assertEqual(plainText, plainDoc.get_focus_content()['all'])
+    def test_document_index_plain_text_special_characters(self):
+        ''' Test document indexing with a plain text document with special chars.'''
+        plain_text = "a - b ? (a)"
+        doc_idx = DocumentIndex(plain_text)
+        expected = {"a": {COUNT: 2, NORM_COUNT: 1.0},
+                    "b": {COUNT: 1, NORM_COUNT: 0.5}}
+        self.assertEqual(expected, doc_idx.get_word_count())
+
+    def test_plain_document_get_focus_content(self):
+        plain_text = "a b a"
+        plainDoc = PlainDocument(plain_text)
+        self.assertEqual(plain_text, plainDoc.get_focus_content()['all'])

@@ -2,7 +2,7 @@ import os
 import unittest
 from index.index import Index
 from index.index_config import IndexConfig
-from index.vectorial_query import VectorialQuery
+from index.vectorial_query import VectorialQueryTfIdf
 
 
 class VectorialQueryTests(unittest.TestCase):
@@ -12,7 +12,7 @@ class VectorialQueryTests(unittest.TestCase):
             os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
 
     def test_VectorialQuery_simple(self):
-        query = VectorialQuery("algebraic")
+        query = VectorialQueryTfIdf("algebraic")
         results = query.execute(self._index)
         success = False
         for (doc_id, cos) in results:

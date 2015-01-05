@@ -8,6 +8,19 @@ from .utility import merge_dictionaries, tf_idf, norm
 from .constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
 
 
+def _compute_norm_count_for_word(word, vector):
+    '''Gets the normalized cound for one word in a vector.'''
+    return vector[word][NORM_COUNT]
+
+
+def _compute_query_vector(query_words, statistic_function):
+    '''Computes a vector representing a query given the words and a statistic to compute.'''
+    query_vector = {}
+    for word in query_words:
+        query_vector[word] = statistic_function(word, query_words)
+    return query_vector
+
+
 class Index:
 
     '''
@@ -26,7 +39,8 @@ class Index:
     def search(self, word):
         '''Returns a list of doc_ids containing the requested word.'''
         standardized_word = word.lower()
-        return self._inverted_index[standardized_word] if standardized_word in self._inverted_index else []
+        return self._inverted_index[standardized_word] \
+            if standardized_word in self._inverted_index else []
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
@@ -42,8 +56,7 @@ class Index:
         input document to the collection, using a specific weight as components
         of the vectors.
         '''
-        query_vector = self._compute_query_vector(
-            document_words, self._compute_tfidf_for_word)
+        query_vector = _compute_query_vector(document_words, self.compute_tfidf_for_word)
         results = self._scalar_product_with_index(query_vector, weight_key)
         results = self._normalize_results(query_vector, results, weight_key)
         return results
@@ -51,6 +64,18 @@ class Index:
     def get_all_doc_ids(self):
         '''Returns a list with all doc ids in the index'''
         return [doc_id for doc_id in self._index]
+
+    def compute_tfidf_for_word(self, word, vector):
+        '''
+        Computes the tfidf for one word in one vector, using the current index statistics.
+        '''
+        if word in self._document_frequencies:
+            weight_input = tf_idf(vector[word][COUNT],
+                                  self._document_frequencies[word],
+                                  self._number_of_docs)
+            return weight_input
+        else:
+            return 0.0
 
     def _scalar_product_with_index(self, query_vector, weight_key):
         '''
@@ -79,25 +104,8 @@ class Index:
             results[doc_id] = results[doc_id] / (result_norm * query_norm)
         return results
 
-    def _compute_query_vector(self, query_words, statistic_function):
-        query_vector = {}
-        for word in query_words:
-            query_vector[word] = statistic_function(word, query_words)
-        return query_vector
-
-    def _compute_tfidf_for_word(self, word, vector):
-        if word in self._document_frequencies:
-            weight_input = tf_idf(vector[word][COUNT],
-                                  self._document_frequencies[word],
-                                  self._number_of_docs)
-            return weight_input
-        else:
-            return 0.0
-
-    def _compute_norm_count_for_word(self, word, vector):
-        return vector[word][NORM_COUNT]
-
     def _init_index(self):
+        '''Initializes the index and inverted index.'''
         if isinstance(self._data_files, str):
             self._index_file(self._data_files)
         elif type(self._data_files) is list:
@@ -166,8 +174,8 @@ class Index:
         self._index[doc_id][WORDS] = word_count
         inverted_words = {
             word: [{
-                DOC_ID: doc_id, 
-                COUNT: word_count[word][COUNT], 
+                DOC_ID: doc_id,
+                COUNT: word_count[word][COUNT],
                 NORM_COUNT:  word_count[word][NORM_COUNT]
             }]
             for word in word_count if word_count[word][COUNT] > 0

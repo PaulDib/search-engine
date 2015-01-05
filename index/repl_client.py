@@ -8,7 +8,7 @@ from .index import Index
 from .index_config import IndexConfig
 from .index_serializer import IndexSerializer
 from .boolean_query import BooleanQuery
-from .vectorial_query import VectorialQuery
+from .vectorial_query import VectorialQueryTfIdf
 from .command_line import CommandLine
 
 
@@ -91,7 +91,7 @@ class CreateIndexAction(Action):
         if len(arguments) < 1 or len(arguments) > 2:
             raise ValueError(self.help())
         self._data_files = arguments[0].split(";")
-        self._stop_words_file = arguments[2] if len(arguments) == 2 else ""
+        self._stop_words_file = arguments[1] if len(arguments) == 2 else ""
 
     def execute(self):
         index_config = IndexConfig(self._stop_words_file)
@@ -147,7 +147,7 @@ class VectorialQueryAction(Action):
         if not client.index:
             raise ValueError("Create or load an index first.")
         query_text = " ".join(arguments)
-        self._query = VectorialQuery(query_text)
+        self._query = VectorialQueryTfIdf(query_text)
         self.index = client.index
 
     def execute(self):
@@ -161,8 +161,8 @@ class VectorialQueryAction(Action):
             print("<" + str(k) + "> - " + document.get_title())
         if len(docs) > 10:
             print("More than 10 results, the list has been truncated. \
-                Here is the full list of document ids:")
-        print(docs)
+                Here is the list of the 10 first results with weights:")
+        print(docs[0:10])
 
     def help(self):
         return '''Wrong use.

@@ -28,6 +28,7 @@ def merge_dictionaries(dict_a, dict_b):
 
 def get_word_list(content):
     '''Gets the list of words in a string'''
+    content = re.sub(r'[^\w\s]', ' ', content)
     word_list = split_content(content)
     word_list = [x.lower() for x in word_list]
     return word_list
