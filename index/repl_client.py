@@ -1,5 +1,6 @@
 import os
 import time
+import traceback
 from .index import Index
 from .index_config import IndexConfig
 from .index_serializer import IndexSerializer
@@ -38,6 +39,7 @@ class ReplClient:
                 action.execute()
             except Exception as e:
                 print("Error: " + str(e))
+                print(traceback.format_exc())
         print("Exiting...")
 
     def _parseInput(self, usrInput):
