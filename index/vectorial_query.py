@@ -4,6 +4,12 @@ Represents a vectorial query using tf-idf.
 from .constants import NORM_COUNT
 from .document_index import DocumentIndex
 
+
+def _sort_results(result_dict):
+    '''Sort results by descending weight.'''
+    return sorted(result_dict.items(), key=lambda x: x[1], reverse=True)
+
+
 class VectorialQuery(object):
 
     '''Represents an abstract vectorial query.'''
@@ -35,10 +41,7 @@ class VectorialQueryTfIdf(VectorialQuery):
         and returns documents sorted by descending matching score.
         '''
         result_dict = index.get_matching_documents(self._index)
-        sorted_results = sorted(result_dict.items(),
-                                key=lambda x: x[1],
-                                reverse=True)
-        return sorted_results
+        return _sort_results(result_dict)
 
 
 class VectorialQueryNormCount(VectorialQuery):
@@ -51,8 +54,4 @@ class VectorialQueryNormCount(VectorialQuery):
         and returns documents sorted by descending matching score.
         '''
         result_dict = index.get_matching_documents(self._index, NORM_COUNT)
-        sorted_results = sorted(result_dict.items(),
-                                key=lambda x: x[1],
-                                reverse=True)
-        return sorted_results
-
+        return _sort_results(result_dict)

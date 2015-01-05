@@ -4,21 +4,8 @@ Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
 from .document_index import DocumentIndex, StructuredDocument
-from .utility import merge_dictionaries, tf_idf, norm
+from .utility import merge_dictionaries, tf_idf, norm, compute_query_vector, compute_norm_count_for_word
 from .constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
-
-
-def _compute_norm_count_for_word(word, vector):
-    '''Gets the normalized cound for one word in a vector.'''
-    return vector[word][NORM_COUNT]
-
-
-def _compute_query_vector(query_words, statistic_function):
-    '''Computes a vector representing a query given the words and a statistic to compute.'''
-    query_vector = {}
-    for word in query_words:
-        query_vector[word] = statistic_function(word, query_words)
-    return query_vector
 
 
 class Index:
@@ -56,7 +43,11 @@ class Index:
         input document to the collection, using a specific weight as components
         of the vectors.
         '''
-        query_vector = _compute_query_vector(document_words, self.compute_tfidf_for_word)
+        if weight_key == NORM_COUNT:
+            stat_func = compute_norm_count_for_word
+        else:
+            stat_func = self.compute_tfidf_for_word
+        query_vector = compute_query_vector(document_words, stat_func)
         results = self._scalar_product_with_index(query_vector, weight_key)
         results = self._normalize_results(query_vector, results, weight_key)
         return results

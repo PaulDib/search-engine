@@ -2,6 +2,7 @@
 Provides general purpose functions.
 '''
 import re
+from .constants import NORM_COUNT
 from math import log, sqrt
 
 
@@ -88,3 +89,22 @@ def norm(word_dict, weight_key=""):
         value = word_dict[word][weight_key] if weight_key else word_dict[word]
         _sum = _sum + value * value
     return sqrt(_sum)
+
+
+def compute_norm_count_for_word(word, vector):
+    '''Gets the normalized count for one word in a vector.'''
+    return vector[word][NORM_COUNT]
+
+
+def compute_tfidf_for_word(word, vector, index):
+    '''Computes the tf idf for a word in the vector against the index.'''
+    return index.compute_tfidf_for_word(word, vector)
+
+
+def compute_query_vector(query_words, statistic_function):
+    '''Computes a vector representing a query given the words and a statistic to compute.'''
+    query_vector = {}
+    for word in query_words:
+        query_vector[word] = statistic_function(word, query_words)
+    return query_vector
+ 
