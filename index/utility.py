@@ -1,8 +1,8 @@
 import re
 from math import log, sqrt
 
-def filterWords(wordList, stopWords):
-    return [x for x in wordList if x not in stopWords]
+def filterWords(wordList, stop_words):
+    return [x for x in wordList if x not in stop_words]
 
 def splitContent(content):
     '''Splits a string around spaces and non-alphanumeric characters'''

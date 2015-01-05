@@ -18,7 +18,7 @@ class StructuredDocument(object):
     def get_focus_content(self):
         '''Returns the indexed content of the document.'''
         res = {}
-        for field in self._config.focusFields:
+        for field in self._config.focus_fields:
             res[field] = self._get_field_content(field)
         return res
 
@@ -31,7 +31,7 @@ class StructuredDocument(object):
 
     def get_title(self):
         '''Returns the field that was marked as title of the document.'''
-        result = self._get_field_content(self._config.titleField).strip()
+        result = self._get_field_content(self._config.title_field).strip()
         result = re.sub(r'(\s)+', r' ', result)
         return result
 
@@ -114,5 +114,5 @@ class DocumentIndex(object):
         '''Returns an array of tokens (clean words) in a string.'''
         tokens = getWordList(content)
         if self._config:
-            tokens = filterWords(tokens, self._config.stopWords)
+            tokens = filterWords(tokens, self._config.stop_words)
         return tokens

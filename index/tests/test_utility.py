@@ -7,7 +7,7 @@ class UtilityTests(unittest.TestCase):
         expected = ["Should", "be", "split", "around", "special", "chars", "like", "these" , "ones", "and", "around", "spaces"]
         self.assertEqual(expected, splitContent(testVal))
 
-    def test_filterOutStopWords(self):
+    def test_filterOutstop_words(self):
         testVal = ["Should", "be", "split", "around", "special", "chars", "like", "these" , "ones", "and", "around", "spaces"]
         expected = ["Should", "split", "special", "chars", "like", "these" , "ones", "and", "spaces"]
         self.assertEqual(expected, filterWords(testVal,  ["around", "be"]))

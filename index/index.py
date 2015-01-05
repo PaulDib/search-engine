@@ -103,12 +103,12 @@ class Index:
             docId = None
             documentContent = []
             for i, line in enumerate(f):
-                if line.startswith(self._config.idMarker):
+                if line.startswith(self._config.id_marker):
                     if docId != None:
                         # Indexing previous document
                         self._saveDocumentLocation(docId, file, documentstart_pos, i - 1)
                         self._addDocumentToIndex(docId, documentContent)
-                    docId = int(line[len(self._config.idMarker):])
+                    docId = int(line[len(self._config.id_marker):])
                     documentstart_pos = i
                     documentContent = []
                 documentContent = documentContent + [line]

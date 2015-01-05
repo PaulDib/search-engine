@@ -33,13 +33,13 @@ class IndexTests(unittest.TestCase):
         }
         self.assertEqual(expected, index._invertedIndex)
 
-    def test_InvertedIndex_withStopWords(self):
+    def test_InvertedIndex_withstop_words(self):
         '''
         Test the counts in the inverted index with stop words.
         Does not test the weights.
         '''
         config = IndexConfig()
-        config.stopWords = ['of', 'by','for']
+        config.stop_words = ['of', 'by','for']
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data", config)
         expected = {
          'subtractions': [{COUNT: 1, DOCID: 2, NORM_COUNT: 1.0, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
