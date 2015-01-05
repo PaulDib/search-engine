@@ -29,15 +29,19 @@ class Index:
     def getMatchingDocuments(self, documentWords, weight_key = NORM_TFIDF):
         '''
         Returns documents similar to the input by computing the cosine of the
-        input document to the collection.
+        input document to the collection, using a specific weight as components
+        of the vectors.
         '''
         results = {}
         for word in documentWords:
-            if word in self._invertedIndex:
-                weight_input = tf_idf(documentWords[word][COUNT],
-                                    self._documentFrequencies[word],
-                                    self._number_of_docs)
+            if word in self._documentFrequencies:
+                weight_input = tf_idf(documentWords[word][COUNT], self._documentFrequencies[word], self._number_of_docs)
                 documentWords[word][weight_key] = weight_input
+            else:
+                documentWords[word][weight_key] = 0.0
+        for word in documentWords:
+            if word in self._invertedIndex:
+                weight_input = documentWords[word][weight_key]
                 for doc in self._invertedIndex[word]:
                     docId = doc[DOCID]
                     weight_doc = doc[weight_key]
