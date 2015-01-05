@@ -5,10 +5,13 @@ from .utility import getWordList, count_tokens, mergeDictionaries, filterWords
 from .constants import COUNT, NORM_COUNT
 import re
 
+
 class StructuredDocument(object):
+
     '''
     Class representing one structured document for read access.
     '''
+
     def __init__(self, content, indexConfig):
         self._config = indexConfig
         self._content = content
@@ -40,8 +43,8 @@ class StructuredDocument(object):
         start_pos = self.field_positions[field] + 1
         if start_pos <= 0:
             return ""
-        next_fields = {v \
-            for (k, v) in self.field_positions.items() if v > start_pos}
+        next_fields = {v for (k, v) in self.field_positions.items()
+                       if v > start_pos}
         stop_pos = min(next_fields) if next_fields else len(self._content)
         return "\n".join(self._content[start_pos:stop_pos])
 
@@ -51,20 +54,23 @@ class StructuredDocument(object):
         '''
         self.field_positions = {}
         for field in self._config.fields:
-            self.field_positions[field] = next((i for i, l \
-                in enumerate(self._content) if l.startswith(field)), -1)
+            self.field_positions[field] = \
+                next((i for i, l in enumerate(self._content)
+                      if l.startswith(field)), -1)
 
 
 class PlainDocument(object):
+
     '''
     Class representing a plain text (non structured) document for read access.
     '''
+
     def __init__(self, content):
         self._content = content
 
     def get_all_content(self):
         '''Returns the whole content of the document.'''
-        return {'all' : self._content}
+        return {'all': self._content}
 
     def get_focus_content(self):
         '''Returns the indexed content of the document.'''
@@ -72,11 +78,13 @@ class PlainDocument(object):
 
 
 class DocumentIndex(object):
+
     '''
     Class containing the indexing result for one document.
     If provided with a indexConfig, the indexing will parse the document
     and filter stop words. Otherwise, it will be done on the whole content.
     '''
+
     def __init__(self, content, indexConfig=None):
         self.word_count = {}
         self._maxword_count = -1
@@ -100,10 +108,12 @@ class DocumentIndex(object):
             field_wc = self._compute_word_count(field_content)
             self.word_count = mergeDictionaries(self.word_count, field_wc)
             field_max = max(field_wc.values()) if field_wc else -1
-            self._maxword_count = field_max if field_max > self._maxword_count \
+            self._maxword_count = \
+                field_max \
+                if field_max > self._maxword_count \
                 else self._maxword_count
         self.word_count = {
-            word:{COUNT: count, NORM_COUNT: count/self._maxword_count} \
+            word: {COUNT: count, NORM_COUNT: count / self._maxword_count}
             for word, count in self.word_count.items()}
 
     def _compute_word_count(self, field_content):

@@ -4,7 +4,9 @@ from index.document_index import DocumentIndex, StructuredDocument, PlainDocumen
 from index.index_config import IndexConfig
 from index.constants import *
 
+
 class DocumentIndexTests(unittest.TestCase):
+
     def setUp(self):
         with open(os.path.dirname(os.path.realpath(__file__)) + "/test_data") as file:
             self.testContent = file.read().splitlines()
@@ -12,7 +14,8 @@ class DocumentIndexTests(unittest.TestCase):
         self.doc = StructuredDocument(self.testContent, IndexConfig())
 
     def test_get_field_positions(self):
-        expected = {'.A': 5, '.B': 3, '.I': 0, '.K': -1, '.N': 8, '.T': 1, '.W': -1, '.X': 10}
+        expected = {'.A': 5, '.B': 3, '.I': 0, '.K': -1,
+                    '.N': 8, '.T': 1, '.W': -1, '.X': 10}
         actual = self.doc.field_positions
         self.assertEqual(expected, actual)
 
@@ -39,7 +42,8 @@ class DocumentIndexTests(unittest.TestCase):
         ''' Test document indexing with a plain text document.'''
         plainText = "a b a"
         docIdx = DocumentIndex(plainText)
-        expected = { "a" : {COUNT: 2, NORM_COUNT: 1.0}, "b": {COUNT: 1, NORM_COUNT: 0.5} }
+        expected = {"a": {COUNT: 2, NORM_COUNT: 1.0},
+                    "b": {COUNT: 1, NORM_COUNT: 0.5}}
         self.assertEqual(expected, docIdx.get_word_count())
 
     def test_PlainDocument_get_focus_content(self):

@@ -8,9 +8,12 @@ from .boolean_query import BooleanQuery
 from .vectorial_query import VectorialQuery
 from .command_line import CommandLine
 
+
 class ReplClient:
+
     '''Read-Eval-Print-Loop client for the index.'''
-    def __init__(self, working_dir = None):
+
+    def __init__(self, working_dir=None):
         if working_dir:
             self._working_dir = working_dir
         else:
@@ -24,12 +27,14 @@ class ReplClient:
             'loadIndex': LoadIndexAction,
             'vectorial': VectorialQueryAction
         }
-        self._command_line = CommandLine(autocomplete_actions = self._actions.keys())
+        self._command_line = CommandLine(
+            autocomplete_actions=self._actions.keys())
         self._startREPL()
 
     def _startREPL(self):
         usrInput = ""
-        print("Starting interactive environment in directory " + self._working_dir)
+        print(
+            "Starting interactive environment in directory " + self._working_dir)
         while(usrInput != "exit"):
             usrInput = self._command_line.readInput("> ")
             if not usrInput:
@@ -54,11 +59,13 @@ class ReplClient:
 
 
 class Action:
+
     def execute(self):
         raise NotImplementedError("Wrong action.")
 
 
 class EmptyAction(Action):
+
     def __init__(self, client, arguments):
         pass
 
@@ -67,6 +74,7 @@ class EmptyAction(Action):
 
 
 class CreateIndexAction(Action):
+
     def __init__(self, client, arguments):
         self._client = client
         if len(arguments) < 1 or len(arguments) > 2:
@@ -79,7 +87,8 @@ class CreateIndexAction(Action):
         print("Indexing files...")
         t_start = time.time()
         self._client.index = Index(self._data_files, indexConfig)
-        print("Index has been created in " + str(time.time() - t_start) + " seconds.")
+        print("Index has been created in " +
+              str(time.time() - t_start) + " seconds.")
 
     def help(self):
         return '''Wrong use.
@@ -87,6 +96,7 @@ class CreateIndexAction(Action):
 
 
 class BooleanQueryAction(Action):
+
     def __init__(self, client, arguments):
         if not arguments:
             raise ValueError(self.help())
@@ -101,14 +111,16 @@ class BooleanQueryAction(Action):
         t_start = time.time()
         docs = self._query.execute()
         duration = time.time() - t_start
-        print("Query executed in " + str(duration) + " seconds and returned " + str(len(docs)) + " results.")
+        print("Query executed in " + str(duration) +
+              " seconds and returned " + str(len(docs)) + " results.")
         it = iter(docs)
         for i in range(0, min(len(docs), 10)):
             docId = next(it)
             document = self.index.documentById(docId)
             print("<" + str(docId) + "> - " + document.get_title())
         if len(docs) > 10:
-            print("More than 10 results, the list has been truncated. Here is the full list of document ids:")
+            print(
+                "More than 10 results, the list has been truncated. Here is the full list of document ids:")
             print(docs)
 
     def help(self):
@@ -117,6 +129,7 @@ class BooleanQueryAction(Action):
 
 
 class VectorialQueryAction(Action):
+
     def __init__(self, client, arguments):
         if not arguments:
             raise ValueError(self.help())
@@ -130,12 +143,14 @@ class VectorialQueryAction(Action):
         t_start = time.time()
         docs = self._query.execute(self.index)
         duration = time.time() - t_start
-        print("Query executed in " + str(duration) + " seconds and returned " + str(len(docs)) + " results.")
-        for (k,v) in docs[0:10]:
+        print("Query executed in " + str(duration) +
+              " seconds and returned " + str(len(docs)) + " results.")
+        for (k, v) in docs[0:10]:
             document = self.index.documentById(k)
             print("<" + str(k) + "> - " + document.get_title())
         if len(docs) > 10:
-            print("More than 10 results, the list has been truncated. Here is the full list of document ids:")
+            print(
+                "More than 10 results, the list has been truncated. Here is the full list of document ids:")
         print(docs)
 
     def help(self):
@@ -144,6 +159,7 @@ class VectorialQueryAction(Action):
 
 
 class SaveIndexAction(Action):
+
     def __init__(self, client, arguments):
         if not arguments:
             raise ValueError(self.help())
@@ -165,6 +181,7 @@ class SaveIndexAction(Action):
 
 
 class LoadIndexAction(Action):
+
     def __init__(self, client, arguments):
         if not arguments:
             raise ValueError(self.help())

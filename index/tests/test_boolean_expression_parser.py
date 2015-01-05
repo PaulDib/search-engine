@@ -1,7 +1,9 @@
 import unittest
 from index.boolean_query import *
 
+
 class BooleanExpressionParserTests(unittest.TestCase):
+
     def test_BooleanExpressionParser_format_expression(self):
         '''Testing expression formatter'''
         expression = "algebraic+! language"
@@ -48,8 +50,10 @@ class BooleanExpressionParserTests(unittest.TestCase):
         operands1 = [WordLeaf('algebraic'), opNot]
         leftOpOr = OperatorNode(OperatorOr, operands1)
 
-        nestedAnd = OperatorNode(OperatorAnd, [WordLeaf('algebraic'), WordLeaf('language')])
-        nestedOr = OperatorNode(OperatorOr, [WordLeaf('expression'), nestedAnd])
+        nestedAnd = OperatorNode(
+            OperatorAnd, [WordLeaf('algebraic'), WordLeaf('language')])
+        nestedOr = OperatorNode(
+            OperatorOr, [WordLeaf('expression'), nestedAnd])
         rightOpNot = OperatorNode(OperatorNot, [nestedOr])
 
         operands2 = [leftOpOr, rightOpNot]

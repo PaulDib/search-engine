@@ -3,10 +3,13 @@ Allow to save an index to a file or read a saved index.
 '''
 import pickle
 
+
 class IndexSerializer(object):
+
     '''
     Allow to save an index to a file or read a saved index.
     '''
+
     def __init__(self):
         pass
 

@@ -2,8 +2,11 @@
 Configuration object for an index.
 '''
 
+
 class IndexConfig(object):
+
     '''Class containing the configuration items for the index'''
+
     def __init__(self, stop_word_file=""):
         if stop_word_file:
             self.read_stop_words(stop_word_file)

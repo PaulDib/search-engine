@@ -1,12 +1,15 @@
 import re
 from math import log, sqrt
 
+
 def filterWords(wordList, stop_words):
     return [x for x in wordList if x not in stop_words]
+
 
 def splitContent(content):
     '''Splits a string around spaces and non-alphanumeric characters'''
     return re.findall(r"[\w]+", content)
+
 
 def mergeDictionaries(a, b):
     '''Merge two dictionaries by summing values'''
@@ -18,14 +21,19 @@ def mergeDictionaries(a, b):
             res[k] = b[k]
     return res
 
+
 def getWordList(content):
     '''Gets the list of words in a string'''
     wordList = splitContent(content)
     wordList = [x.lower() for x in wordList]
     return wordList
 
+
 def count_tokens(tokens):
-    '''Given a list of elements, counts the number of occurences of each element as a dictionary.'''
+    '''
+    Given a list of elements, counts the number of occurences
+    of each element as a dictionary.
+    '''
     result = {}
     for token in tokens:
         if token in result:
@@ -33,6 +41,7 @@ def count_tokens(tokens):
         else:
             result[token] = 1
     return result
+
 
 def tf_idf(tf, df, doc_nbr):
     '''
@@ -43,7 +52,8 @@ def tf_idf(tf, df, doc_nbr):
     '''
     if tf == 0:
         return 0
-    return (log(tf + 1)/log(10)) * log(doc_nbr/df)/log(10)
+    return (log(tf + 1) / log(10)) * log(doc_nbr / df) / log(10)
+
 
 def flatten(dic):
     '''
@@ -63,12 +73,13 @@ def flatten(dic):
             res[key] = dic[key]
     return res
 
-def norm(word_dict, weight_key = ""):
+
+def norm(word_dict, weight_key=""):
     '''
     Computes the norm of a word vector.
     '''
     _sum = 0
     for word in word_dict:
         value = word_dict[word][weight_key] if weight_key else word_dict[word]
-        _sum = _sum + value*value
+        _sum = _sum + value * value
     return sqrt(_sum)

@@ -4,8 +4,11 @@ Provides classes to create and execute a boolean query on an index.
 import re
 from pyparsing import nestedExpr
 
+
 class AbstractOperator(object):
+
     ''' Boolean operator base class.'''
+
     def __init__(self):
         pass
 
@@ -14,7 +17,9 @@ class AbstractOperator(object):
         ''' Apply the operator to the input operands. '''
         pass
 
+
 class OperatorOr(AbstractOperator):
+
     '''
     Or operator.
     '''
@@ -24,6 +29,7 @@ class OperatorOr(AbstractOperator):
 
 
 class OperatorAnd(AbstractOperator):
+
     '''
     And operator.
     '''
@@ -40,6 +46,7 @@ class OperatorAnd(AbstractOperator):
 
 
 class OperatorNot(AbstractOperator):
+
     '''
     Not operator.
     '''
@@ -53,7 +60,9 @@ class OperatorNot(AbstractOperator):
 
 
 class OperatorNode(object):
+
     '''Node in the boolean query execution tree'''
+
     def __init__(self, operator=None, operands=None):
         if operands is None:
             self._operands = []
@@ -63,7 +72,8 @@ class OperatorNode(object):
 
     def __str__(self):
         return ('{operator: ' + str(self._operator) + ', operands: ['
-            + ', '.join([str(operand) for operand in self._operands]) + ']}')
+                + ', '.join([str(operand) for operand in self._operands])
+                + ']}')
 
     def __unicode__(self):
         return unicode(str(self))
@@ -83,7 +93,9 @@ class OperatorNode(object):
 
 
 class WordLeaf(object):
+
     '''Leaf in the boolean query execution tree'''
+
     def __init__(self, word):
         self._index = None
         self._word = word
@@ -104,9 +116,11 @@ class WordLeaf(object):
 
 
 class BooleanExpressionParser(object):
+
     '''
     Parses a boolean expression and creates the execution tree.
     '''
+
     def __init__(self):
         self._binary_operators = {
             '+': OperatorOr,
@@ -134,7 +148,7 @@ class BooleanExpressionParser(object):
         '''
         expression = '(' + re.sub(r'[\s]', '', expression) + ')'
         op_pattern = r'([{0}{1}])'.format(
-            "".join(self._binary_operators.keys()), \
+            "".join(self._binary_operators.keys()),
             "".join(self._unary_operators.keys()))
         expression = re.sub(op_pattern, r" \1 ", expression)
         return expression
@@ -180,7 +194,7 @@ class BooleanExpressionParser(object):
                         be followed by its operand.")
                 node = OperatorNode(self._unary_operators[operator])
                 if is_operand:
-                    combined_ops[i-1].add_operand(node)
+                    combined_ops[i - 1].add_operand(node)
                 else:
                     is_operand = True
                     combined_ops.append(node)
@@ -204,7 +218,7 @@ class BooleanExpressionParser(object):
                     raise ValueError("Binary operator should \
                         be between its operands.")
                 root = OperatorNode(
-                    operator=self._binary_operators[operator], \
+                    operator=self._binary_operators[operator],
                     operands=[root])
             else:
                 root.add_operand(operator)
@@ -212,10 +226,12 @@ class BooleanExpressionParser(object):
 
 
 class BooleanQuery(object):
+
     '''
     Represents a boolean query.
     The query can use the * (and), + (or) and ! (not) operators.
     '''
+
     def __init__(self, query, parser=BooleanExpressionParser()):
         self._root = parser.parse_expression(query)
 

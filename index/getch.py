@@ -1,7 +1,9 @@
 class _Getch:
+
     """
     Gets a single character from standard input.  Does not echo to the screen.
     """
+
     def __init__(self):
         try:
             self.impl = _GetchWindows()
@@ -13,11 +15,15 @@ class _Getch:
 
 
 class _GetchUnix:
+
     def __init__(self):
-        import tty, sys
+        import tty
+        import sys
 
     def __call__(self):
-        import sys, tty, termios
+        import sys
+        import tty
+        import termios
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
         try:
@@ -29,15 +35,17 @@ class _GetchUnix:
 
 
 class _GetchWindows:
+
     def __init__(self):
         import msvcrt
 
     def __call__(self):
         import msvcrt
         character = msvcrt.getch()
-        if character == b'\xe0': # escaped character (special key or arrow key)
+        # escaped character (special key or arrow key)
+        if character == b'\xe0':
             return '\x1b'
-        elif character == b'\x08': # backspace key
+        elif character == b'\x08':  # backspace key
             return chr(127)
         return character.decode('latin-1')
 
