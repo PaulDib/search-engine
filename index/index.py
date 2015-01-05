@@ -1,5 +1,5 @@
 from .document_index import DocumentIndex, StructuredDocument
-from .utility import mergeDictionaries, tf_idf, norm
+from .utility import merge_dictionaries, tf_idf, norm
 from .constants import *
 
 
@@ -158,7 +158,7 @@ class Index:
         self._index[docId][WORDS] = word_count
         invertedWords = {word:[{DOCID: docId, COUNT: word_count[word][COUNT], NORM_COUNT:  word_count[word][NORM_COUNT]}]
                          for word in word_count if word_count[word][COUNT] > 0}
-        self._invertedIndex = mergeDictionaries(
+        self._invertedIndex = merge_dictionaries(
             self._invertedIndex, invertedWords)
 
     def _getDocumentContent(self, docId):

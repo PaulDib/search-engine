@@ -1,7 +1,7 @@
 '''
 Provides classes to index single documents.
 '''
-from .utility import getWordList, count_tokens, mergeDictionaries, filterWords
+from .utility import get_word_list, count_tokens, merge_dictionaries, filter_words
 from .constants import COUNT, NORM_COUNT
 import re
 
@@ -106,7 +106,7 @@ class DocumentIndex(object):
         for field in doc_content:
             field_content = doc_content[field]
             field_wc = self._compute_word_count(field_content)
-            self.word_count = mergeDictionaries(self.word_count, field_wc)
+            self.word_count = merge_dictionaries(self.word_count, field_wc)
             field_max = max(field_wc.values()) if field_wc else -1
             self._maxword_count = \
                 field_max \
@@ -122,7 +122,7 @@ class DocumentIndex(object):
 
     def _tokenize(self, content):
         '''Returns an array of tokens (clean words) in a string.'''
-        tokens = getWordList(content)
+        tokens = get_word_list(content)
         if self._config:
-            tokens = filterWords(tokens, self._config.stop_words)
+            tokens = filter_words(tokens, self._config.stop_words)
         return tokens

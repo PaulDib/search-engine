@@ -1,32 +1,36 @@
+'''
+Provides general purpose functions.
+'''
 import re
 from math import log, sqrt
 
 
-def filterWords(wordList, stop_words):
-    return [x for x in wordList if x not in stop_words]
+def filter_words(word_list, stop_words):
+    '''Removes stop_words from word_list'''
+    return [x for x in word_list if x not in stop_words]
 
 
-def splitContent(content):
+def split_content(content):
     '''Splits a string around spaces and non-alphanumeric characters'''
     return re.findall(r"[\w]+", content)
 
 
-def mergeDictionaries(a, b):
+def merge_dictionaries(dict_a, dict_b):
     '''Merge two dictionaries by summing values'''
-    res = a
-    for k in b:
+    res = dict_a
+    for k in dict_b:
         if k in res:
-            res[k] = res[k] + b[k]
+            res[k] = res[k] + dict_b[k]
         else:
-            res[k] = b[k]
+            res[k] = dict_b[k]
     return res
 
 
-def getWordList(content):
+def get_word_list(content):
     '''Gets the list of words in a string'''
-    wordList = splitContent(content)
-    wordList = [x.lower() for x in wordList]
-    return wordList
+    word_list = split_content(content)
+    word_list = [x.lower() for x in word_list]
+    return word_list
 
 
 def count_tokens(tokens):
@@ -43,16 +47,16 @@ def count_tokens(tokens):
     return result
 
 
-def tf_idf(tf, df, doc_nbr):
+def tf_idf(term_frequency, document_frequency, doc_nbr):
     '''
-    Computes tf idf.
-    tf: frequency of a term in the document
-    df: number of documents that contain the term
+    Computes term frequency - inverse document frequency.
+    term_frequency: frequency of a term in the document
+    document_frequency: number of documents that contain the term
     doc_nbr: number of documents in the index
     '''
-    if tf == 0:
+    if term_frequency == 0:
         return 0
-    return (log(tf + 1) / log(10)) * log(doc_nbr / df) / log(10)
+    return (log(term_frequency + 1) / log(10)) * log(doc_nbr / document_frequency) / log(10)
 
 
 def flatten(dic):

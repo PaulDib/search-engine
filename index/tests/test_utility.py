@@ -4,24 +4,24 @@ from index.utility import *
 
 class UtilityTests(unittest.TestCase):
 
-    def test_splitContent(self):
+    def test_split_content(self):
         testVal = "Should be split - around'special*chars-like,these.ones and around spaces"
         expected = ["Should", "be", "split", "around", "special",
                     "chars", "like", "these", "ones", "and", "around", "spaces"]
-        self.assertEqual(expected, splitContent(testVal))
+        self.assertEqual(expected, split_content(testVal))
 
     def test_filterOutstop_words(self):
         testVal = ["Should", "be", "split", "around", "special",
                    "chars", "like", "these", "ones", "and", "around", "spaces"]
         expected = ["Should", "split", "special", "chars",
                     "like", "these", "ones", "and", "spaces"]
-        self.assertEqual(expected, filterWords(testVal,  ["around", "be"]))
+        self.assertEqual(expected, filter_words(testVal,  ["around", "be"]))
 
-    def test_mergeDictionaries(self):
+    def test_merge_dictionaries(self):
         a = {"key1": 4, "key2": 5}
         b = {"key2": 4, "key3": 5}
         expected = {"key1": 4, "key2": 9, "key3": 5}
-        self.assertEqual(expected, mergeDictionaries(a, b))
+        self.assertEqual(expected, merge_dictionaries(a, b))
 
     def test_flatten_single_depth(self):
         dic = {"a": {"b": [0, 1, 2], "c": 1}}
