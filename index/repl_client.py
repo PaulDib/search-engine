@@ -94,7 +94,7 @@ class BooleanQueryAction(Action):
             raise ValueError("Create or load an index first.")
         queryText = "".join(arguments)
         self._query = BooleanQuery(queryText)
-        self._query.setIndex(client.index)
+        self._query.set_index(client.index)
         self.index = client.index
 
     def execute(self):

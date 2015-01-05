@@ -7,7 +7,7 @@ class BooleanExpressionParserTests(unittest.TestCase):
         expression = "algebraic+! language"
         formatted_expr = "(algebraic +  ! language)"
         parser = BooleanExpressionParser()
-        self.assertEqual(formatted_expr, parser.formatExpression(expression))
+        self.assertEqual(formatted_expr, parser.format_expression(expression))
 
     def test_BooleanExpressionParser_binary_operator(self):
         '''Testing query parsing for binary operator'''
