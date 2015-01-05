@@ -1,6 +1,11 @@
+'''
+Main entry point of the package.
+Provides the Index class that is able to index a collection 
+of documents and can be used to query them.
+'''
 from .document_index import DocumentIndex, StructuredDocument
 from .utility import merge_dictionaries, tf_idf, norm
-from .constants import *
+from .constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
 
 
 class Index:
@@ -11,164 +16,170 @@ class Index:
 
     def __init__(self, dataFiles, indexConfig):
         self._config = indexConfig
-        self._dataFiles = dataFiles
+        self._data_files = dataFiles
         self._index = {}
-        self._invertedIndex = {}
+        self._inverted_index = {}
+        self._document_frequencies = {}
+        self._number_of_docs = len(self._index)
         self._init_index()
 
     def search(self, word):
-        '''Returns a list of docIds containing the requested word.'''
-        stdWord = word.lower()
-        return self._invertedIndex[stdWord] if stdWord in self._invertedIndex else []
+        '''Returns a list of doc_ids containing the requested word.'''
+        standardized_word = word.lower()
+        return self._inverted_index[standardized_word] if standardized_word in self._inverted_index else []
 
-    def documentById(self, docId):
+    def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return StructuredDocument(self._getDocumentContent(docId), self._config)
+        return StructuredDocument(self._getdocument_content(doc_id), self._config)
 
-    def indexByDocId(self, docId):
+    def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
-        return self._index[docId] if docId in self._index else {}
+        return self._index[doc_id] if doc_id in self._index else {}
 
-    def getMatchingDocuments(self, documentWords, weight_key=NORM_TFIDF):
+    def get_matching_documents(self, document_words, weight_key=NORM_TFIDF):
         '''
         Returns documents similar to the input by computing the cosine of the
         input document to the collection, using a specific weight as components
         of the vectors.
         '''
-        queryVector = self._computeQueryVector(
-            documentWords, self._computeTfidfForWord)
-        results = self._scalarProductWithIndex(queryVector, weight_key)
-        results = self._normalizeResults(queryVector, results, weight_key)
+        query_vector = self._compute_query_vector(
+            document_words, self._compute_tfidf_for_word)
+        results = self._scalar_product_with_index(query_vector, weight_key)
+        results = self._normalize_results(query_vector, results, weight_key)
         return results
 
-    def getAllDocIds(self):
+    def get_all_doc_ids(self):
         '''Returns a list with all doc ids in the index'''
-        return [docId for docId in self._index]
+        return [doc_id for doc_id in self._index]
 
-    def _scalarProductWithIndex(self, queryVector, weight_key):
+    def _scalar_product_with_index(self, query_vector, weight_key):
         '''
         Computes the scalar product between a query vector and the indexed docs.
         '''
         results = {}
-        for word in queryVector:
-            if word in self._invertedIndex:
-                weight_input = queryVector[word]
-                for doc in self._invertedIndex[word]:
-                    docId = doc[DOCID]
+        for word in query_vector:
+            if word in self._inverted_index:
+                weight_input = query_vector[word]
+                for doc in self._inverted_index[word]:
+                    doc_id = doc[DOC_ID]
                     weight_doc = doc[weight_key]
-                    if docId in results:
-                        results[docId] = results[
-                            docId] + weight_doc * weight_input
+                    if doc_id in results:
+                        results[doc_id] = results[
+                            doc_id] + weight_doc * weight_input
                     else:
-                        results[docId] = weight_doc * weight_input
+                        results[doc_id] = weight_doc * weight_input
         return results
 
-    def _normalizeResults(self, queryVector, results, weight_key):
+    def _normalize_results(self, query_vector, results, weight_key):
         '''
         Divide results by the norm of the two input vectors.
         '''
-        queryNorm = norm(queryVector)
-        for docId in results:
-            resultNorm = norm(self._index[docId][WORDS], weight_key)
-            results[docId] = results[docId] / (resultNorm * queryNorm)
+        query_norm = norm(query_vector)
+        for doc_id in results:
+            result_norm = norm(self._index[doc_id][WORDS], weight_key)
+            results[doc_id] = results[doc_id] / (result_norm * query_norm)
         return results
 
-    def _computeQueryVector(self, queryWords, statisticFunction):
-        queryVector = {}
-        for word in queryWords:
-            queryVector[word] = statisticFunction(word, queryWords)
-        return queryVector
+    def _compute_query_vector(self, query_words, statistic_function):
+        query_vector = {}
+        for word in query_words:
+            query_vector[word] = statistic_function(word, query_words)
+        return query_vector
 
-    def _computeTfidfForWord(self, word, vector):
-        if word in self._documentFrequencies:
+    def _compute_tfidf_for_word(self, word, vector):
+        if word in self._document_frequencies:
             weight_input = tf_idf(vector[word][COUNT],
-                                  self._documentFrequencies[word],
+                                  self._document_frequencies[word],
                                   self._number_of_docs)
             return weight_input
         else:
             return 0.0
 
-    def _computeNormCountForWord(self, word, vector):
+    def _compute_norm_count_for_word(self, word, vector):
         return vector[word][NORM_COUNT]
 
     def _init_index(self):
-        if isinstance(self._dataFiles, str):
-            self._indexFile(self._dataFiles)
-        elif type(self._dataFiles) is list:
-            for file in self._dataFiles:
-                self._indexFile(file)
+        if isinstance(self._data_files, str):
+            self._index_file(self._data_files)
+        elif type(self._data_files) is list:
+            for file in self._data_files:
+                self._index_file(file)
         else:
             raise TypeError("dataFiles should be a string or a list")
 
-        self._initStatistics()
+        self._init_statistics()
 
-    def _indexFile(self, file):
+    def _index_file(self, file):
         '''Populating the index with the results for one file.'''
-        with open(file) as f:
-            docId = None
-            documentContent = []
-            for i, line in enumerate(f):
+        with open(file) as file_ptr:
+            doc_id = None
+            document_content = []
+            i = 0
+            document_start_pos = 0
+            for i, line in enumerate(file_ptr):
                 if line.startswith(self._config.id_marker):
-                    if docId is not None:
+                    if doc_id is not None:
                         # Indexing previous document
-                        self._saveDocumentLocation(
-                            docId, file, documentstart_pos, i - 1)
-                        self._addDocumentToIndex(docId, documentContent)
-                    docId = int(line[len(self._config.id_marker):])
-                    documentstart_pos = i
-                    documentContent = []
-                documentContent = documentContent + [line]
+                        self._save_document_location(
+                            doc_id, file, document_start_pos, i - 1)
+                        self._add_document_to_index(doc_id, document_content)
+                    doc_id = int(line[len(self._config.id_marker):])
+                    document_start_pos = i
+                    document_content = []
+                document_content = document_content + [line]
 
             # Handling last document.
-            if docId is not None:
-                self._saveDocumentLocation(
-                    docId, file, documentstart_pos, i - 1)
-                self._addDocumentToIndex(docId, documentContent)
+            if doc_id is not None:
+                self._save_document_location(
+                    doc_id, file, document_start_pos, i - 1)
+                self._add_document_to_index(doc_id, document_content)
 
-    def _initStatistics(self):
+    def _init_statistics(self):
         # TODO: Refactor
-        self._documentFrequencies = {}
+        self._document_frequencies = {}
         self._number_of_docs = len(self._index)
-        for word in self._invertedIndex:
-            df = len(self._invertedIndex[word])
-            self._documentFrequencies[word] = df
-            for doc in self._invertedIndex[word]:
-                tfidf = tf_idf(doc[COUNT], df, self._number_of_docs)
+        for word in self._inverted_index:
+            doc_frequency = len(self._inverted_index[word])
+            self._document_frequencies[word] = doc_frequency
+            for doc in self._inverted_index[word]:
+                tfidf = tf_idf(doc[COUNT], doc_frequency, self._number_of_docs)
                 doc[TFIDF] = tfidf
-                self._index[doc[DOCID]][WORDS][word][TFIDF] = tfidf
-            max_tfidf = max({doc[TFIDF] for doc in self._invertedIndex[word]})
+                self._index[doc[DOC_ID]][WORDS][word][TFIDF] = tfidf
+            max_tfidf = max({doc[TFIDF] for doc in self._inverted_index[word]})
             if max_tfidf > 0:
-                for doc in self._invertedIndex[word]:
+                for doc in self._inverted_index[word]:
                     doc[NORM_TFIDF] = doc[TFIDF] / max_tfidf
-                    self._index[doc[DOCID]][WORDS][word][NORM_TFIDF] = \
+                    self._index[doc[DOC_ID]][WORDS][word][NORM_TFIDF] = \
                         doc[TFIDF] / max_tfidf
             else:
-                for doc in self._invertedIndex[word]:
+                for doc in self._inverted_index[word]:
                     doc[NORM_TFIDF] = doc[TFIDF]
-                    self._index[doc[DOCID]][WORDS][
+                    self._index[doc[DOC_ID]][WORDS][
                         word][NORM_TFIDF] = doc[TFIDF]
 
-    def _saveDocumentLocation(self, docId, file, start_pos, endPos):
+    def _save_document_location(self, doc_id, file, start_pos, end_pos):
         '''Saves the position of the document in its file for later reads.'''
-        self._index[docId] = {FILE: file, START: start_pos, END: endPos}
+        self._index[doc_id] = {FILE: file, START: start_pos, END: end_pos}
 
-    def _addDocumentToIndex(self, docId, content):
+    def _add_document_to_index(self, doc_id, content):
         '''Populating the index with the result for one document.'''
         word_count = DocumentIndex(content, self._config).get_word_count()
-        self._index[docId][WORDS] = word_count
-        invertedWords = {word:[{DOCID: docId, COUNT: word_count[word][COUNT], NORM_COUNT:  word_count[word][NORM_COUNT]}]
-                         for word in word_count if word_count[word][COUNT] > 0}
-        self._invertedIndex = merge_dictionaries(
-            self._invertedIndex, invertedWords)
+        self._index[doc_id][WORDS] = word_count
+        inverted_words = {
+            word: [{DOC_ID: doc_id, COUNT: word_count[word][COUNT], NORM_COUNT:  word_count[word][NORM_COUNT]}]
+            for word in word_count if word_count[word][COUNT] > 0
+        }
+        self._inverted_index = merge_dictionaries(
+            self._inverted_index, inverted_words)
 
-    def _getDocumentContent(self, docId):
+    def _getdocument_content(self, doc_id):
         '''Outputs the document content as a list of lines'''
-        if docId in self._index:
+        if doc_id in self._index:
             content = []
-            docInfo = self._index[docId]
-            with open(docInfo[FILE]) as f:
-                for i, line in enumerate(f):
-                    if i >= docInfo[START] and i <= docInfo[END]:
+            doc_info = self._index[doc_id]
+            with open(doc_info[FILE]) as file_ptr:
+                for i, line in enumerate(file_ptr):
+                    if i >= doc_info[START] and i <= doc_info[END]:
                         content = content + [line]
             return content
-        raise ValueError("doc " + docId + " not found")
+        raise ValueError("doc " + doc_id + " not found")

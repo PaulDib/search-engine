@@ -3,7 +3,7 @@ Defines package constants.
 '''
 
 FILE = 'file'
-DOCID = 'docId'
+DOC_ID = 'doc_id'
 COUNT = 'count'
 NORM_COUNT = 'norm_count'
 WORDS = 'words'

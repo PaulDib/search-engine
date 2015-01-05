@@ -55,7 +55,7 @@ class OperatorNot(AbstractOperator):
         if len(operands) != 1:
             raise ValueError("The NOT operator should be \
                 used with exactly one operand")
-        all_docs = set(operands[0]._index.getAllDocIds())
+        all_docs = set(operands[0]._index.get_all_doc_ids())
         return all_docs.difference(operands[0].get_postings())
 
 
@@ -108,7 +108,7 @@ class WordLeaf(object):
 
     def get_postings(self):
         '''Returns the result of apply the operator node.'''
-        return {posting['docId'] for posting in self._index.search(self._word)}
+        return {posting['doc_id'] for posting in self._index.search(self._word)}
 
     def set_index(self, index):
         '''Recursively sets the index for the node and its children.'''

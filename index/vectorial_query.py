@@ -22,7 +22,7 @@ class VectorialQuery(object):
         Executes the query against the index
         and returns documents sorted by descending matching score.
         '''
-        result_dict = index.getMatchingDocuments(self._index)
+        result_dict = index.get_matching_documents(self._index)
         sorted_results = sorted(result_dict.items(),
                                 key=lambda x: x[1],
                                 reverse=True)

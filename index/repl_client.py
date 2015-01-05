@@ -127,7 +127,7 @@ class BooleanQueryAction(Action):
         iterator = iter(docs)
         for i in range(0, min(len(docs), 10)):
             doc_id = next(iterator)
-            document = self.index.documentById(doc_id)
+            document = self.index.document_by_id(doc_id)
             print("<" + str(doc_id) + "> - " + document.get_title())
         if len(docs) > 10:
             print("More than 10 results, the list has been truncated. \
@@ -157,7 +157,7 @@ class VectorialQueryAction(Action):
         print("Query executed in " + str(duration) +
               " seconds and returned " + str(len(docs)) + " results.")
         for (k, value) in docs[0:10]:
-            document = self.index.documentById(k)
+            document = self.index.document_by_id(k)
             print("<" + str(k) + "> - " + document.get_title())
         if len(docs) > 10:
             print("More than 10 results, the list has been truncated. \

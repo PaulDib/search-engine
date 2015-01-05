@@ -15,7 +15,7 @@ class VectorialQueryTests(unittest.TestCase):
         query = VectorialQuery("algebraic")
         results = query.execute(self._index)
         success = False
-        for (docId, cos) in results:
-            if docId == 1:
+        for (doc_id, cos) in results:
+            if doc_id == 1:
                 success = True
         self.assertTrue(success)

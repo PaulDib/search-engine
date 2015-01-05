@@ -2,7 +2,7 @@ import unittest
 import os
 from index.document_index import DocumentIndex, StructuredDocument, PlainDocument
 from index.index_config import IndexConfig
-from index.constants import *
+from index.constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
 
 
 class DocumentIndexTests(unittest.TestCase):
@@ -41,10 +41,10 @@ class DocumentIndexTests(unittest.TestCase):
     def test_documentIndex_plainText(self):
         ''' Test document indexing with a plain text document.'''
         plainText = "a b a"
-        docIdx = DocumentIndex(plainText)
+        doc_idx = DocumentIndex(plainText)
         expected = {"a": {COUNT: 2, NORM_COUNT: 1.0},
                     "b": {COUNT: 1, NORM_COUNT: 0.5}}
-        self.assertEqual(expected, docIdx.get_word_count())
+        self.assertEqual(expected, doc_idx.get_word_count())
 
     def test_PlainDocument_get_focus_content(self):
         plainText = "a b a"
