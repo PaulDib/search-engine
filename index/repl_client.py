@@ -8,7 +8,7 @@ from .index import Index
 from .index_config import IndexConfig
 from .index_serializer import IndexSerializer
 from .boolean_query import BooleanQuery
-from .vectorial_query import VectorialQueryTfIdf
+from .vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
 from .command_line import CommandLine
 
 
@@ -28,7 +28,8 @@ class ReplClient(object):
             'exit': EmptyAction,
             'saveIndex':  SaveIndexAction,
             'loadIndex': LoadIndexAction,
-            'vectorial': VectorialQueryAction
+            'tfidfVectorial': VectorialQueryTfidfAction,
+            'normCountVectorial': VectorialQueryNormCountAction
         }
         self._command_line = CommandLine(
             autocomplete_actions=self._actions.keys())
@@ -141,14 +142,15 @@ class BooleanQueryAction(Action):
 
 class VectorialQueryAction(Action):
 
+    '''Abstract class for vectorial query action.'''
+
     def __init__(self, client, arguments):
         if not arguments:
             raise ValueError(self.help())
         if not client.index:
             raise ValueError("Create or load an index first.")
-        query_text = " ".join(arguments)
-        self._query = VectorialQueryTfIdf(query_text)
         self.index = client.index
+        self._query = None
 
     def execute(self):
         t_start = time.time()
@@ -165,8 +167,30 @@ class VectorialQueryAction(Action):
         print(docs[0:10])
 
     def help(self):
+        pass
+
+class VectorialQueryTfidfAction(VectorialQueryAction):
+
+    def __init__(self, client, arguments):
+        super(VectorialQueryTfidfAction, self).__init__(client, arguments)
+        query_text = " ".join(arguments)
+        self._query = VectorialQueryTfIdf(query_text)
+
+    def help(self):
         return '''Wrong use.
-        Example: vectorial this is a vectorial query'''
+        Example: tfidfVectorial this is a vectorial query'''
+
+
+class VectorialQueryNormCountAction(VectorialQueryAction):
+
+    def __init__(self, client, arguments):
+        super(VectorialQueryNormCountAction, self).__init__(client, arguments)
+        query_text = " ".join(arguments)
+        self._query = VectorialQueryNormCount(query_text)
+
+    def help(self):
+        return '''Wrong use.
+        Example: normCountVectorial this is a vectorial query'''
 
 
 class SaveIndexAction(Action):
