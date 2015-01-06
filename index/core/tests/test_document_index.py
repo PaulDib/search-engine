@@ -1,8 +1,8 @@
 import unittest
 import os
-from index.document_index import DocumentIndex, StructuredDocument, PlainDocument
-from index.index_config import IndexConfig
-from index.constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
+from ..document_index import DocumentIndex, StructuredDocument, PlainDocument
+from ..index_config import IndexConfig
+from ..constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
 
 
 class DocumentIndexTests(unittest.TestCase):

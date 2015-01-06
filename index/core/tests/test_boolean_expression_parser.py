@@ -1,5 +1,5 @@
 import unittest
-from index.boolean_query import *
+from ..boolean_query import *
 
 
 class BooleanExpressionParserTests(unittest.TestCase):

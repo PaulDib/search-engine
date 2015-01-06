@@ -1,8 +1,8 @@
 import unittest
 import os
-from index.boolean_query import OperatorNot, OperatorAnd, OperatorOr, OperatorNode, WordLeaf
-from index.index import Index
-from index.index_config import IndexConfig
+from ..boolean_query import OperatorNot, OperatorAnd, OperatorOr, OperatorNode, WordLeaf
+from ..index import Index
+from ..index_config import IndexConfig
 
 
 class BooleanQueryTests(unittest.TestCase):

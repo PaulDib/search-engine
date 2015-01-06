@@ -1,6 +1,6 @@
-from index.index import Index
-from index.index_config import IndexConfig
-from index.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
+from index.core.index import Index
+from index.core.index_config import IndexConfig
+from index.core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
 from math import ceil
 from pylab import *
 

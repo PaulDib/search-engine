@@ -1,5 +1,5 @@
 import unittest
-from index.utility import *
+from ..utility import *
 
 
 class UtilityTests(unittest.TestCase):

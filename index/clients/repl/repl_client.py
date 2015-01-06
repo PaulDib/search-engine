@@ -4,11 +4,11 @@ Provides a REPL client for the index package.
 import os
 import time
 import traceback
-from .index import Index
-from .index_config import IndexConfig
-from .index_serializer import IndexSerializer
-from .boolean_query import BooleanQuery
-from .vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
+from ...core.index import Index
+from ...core.index_config import IndexConfig
+from ...core.index_serializer import IndexSerializer
+from ...core.boolean_query import BooleanQuery
+from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
 from .command_line import CommandLine
 
 

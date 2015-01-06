@@ -1,9 +1,9 @@
 import os
 import unittest
 from math import sqrt
-from index.index import Index
-from index.index_config import IndexConfig
-from index.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
+from ..index import Index
+from ..index_config import IndexConfig
+from ..vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
 
 
 class VectorialQueryTests(unittest.TestCase):

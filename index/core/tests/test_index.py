@@ -1,9 +1,9 @@
 import unittest
 import os
-from index.index import Index
-from index.index_config import IndexConfig
-from index.utility import tf_idf
-from index.constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
+from ..index import Index
+from ..index_config import IndexConfig
+from ..utility import tf_idf
+from ..constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
 
 
 class IndexTests(unittest.TestCase):
