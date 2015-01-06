@@ -37,6 +37,7 @@ def read_expected_results(file_path):
 def compute_recall_and_precision(queries, expected, index, query_type, chart_title, output_path, step=1):
     average_prec_list = []
     average_recall_list = []
+    results = {}
 
     for percentage in range(1, 100, 1):
         average_prec = 0
@@ -45,8 +46,13 @@ def compute_recall_and_precision(queries, expected, index, query_type, chart_tit
             pertinent = expected[query_id] if query_id in expected else []
             pertinent_len = len(pertinent)
 
-            query_tfidf = query_type(query_text)
-            query_results = query_tfidf.execute(index)
+            if query_id not in results:
+                query_tfidf = query_type(query_text)
+                query_results = query_tfidf.execute(index)
+                results[query_id] = query_results
+            else:
+                query_results = results[query_id]
+            
             tfidf_len = len(query_results)
 
             top = math.ceil(tfidf_len*percentage/100)
@@ -83,9 +89,9 @@ expected = read_expected_results('data/qrels.text')
 print('Running queries...')
 compute_recall_and_precision(queries, expected, index,
                              VectorialQueryTfIdf, 'tfidf', 'tfidf.png')
-# compute_recall_and_precision(queries, expected, index,
-#                               VectorialQueryNormCount, 'normalized_count',
-#                               'normalized_count.png')
+compute_recall_and_precision(queries, expected, index,
+                              VectorialQueryNormCount, 'normalized_count',
+                              'normalized_count.png')
 
 
 
