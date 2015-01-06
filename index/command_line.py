@@ -123,17 +123,20 @@ class CommandLine:
                 self._buff_ptr = len(self._buff)
 
     def _erase_previous_char(self):
+        '''Erases the character right before the cursor.'''
         if self._buff_ptr > 0:
             self._buff = self._buff[
                 0:self._buff_ptr - 1] + self._buff[self._buff_ptr:]
             self._buff_ptr = self._buff_ptr - 1
 
     def _add_to_buffer(self, char):
+        '''Adds a char to the current buffer at the position of the cursor.'''
         self._buff = self._buff[0:self._buff_ptr] + \
             char + self._buff[self._buff_ptr:]
         self._buff_ptr = self._buff_ptr + 1
 
     def _add_buffer_to_history(self):
+        '''Adds the buffer to history before it is returned to the client.'''
         if self._buff == '':
             self._history = self._history[0:-1]
         else:
@@ -148,6 +151,7 @@ class CommandLine:
             self._history[self._hist_ptr] = self._buff
 
     def _write_buffer(self, prompt):
+        '''Writes the current buffer to the screen.'''
         print("\r" + prompt + " " * self._old_len, end="", flush=True)
         print("\r" + prompt + self._buff, end="", flush=True)
         print("\r" + prompt + self._buff[0:self._buff_ptr], end="", flush=True)

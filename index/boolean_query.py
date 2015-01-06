@@ -55,7 +55,7 @@ class OperatorNot(AbstractOperator):
         if len(operands) != 1:
             raise ValueError("The NOT operator should be \
                 used with exactly one operand")
-        all_docs = set(operands[0]._index.get_all_doc_ids())
+        all_docs = set(operands[0].index.get_all_doc_ids())
         return all_docs.difference(operands[0].get_postings())
 
 
@@ -97,7 +97,7 @@ class WordLeaf(object):
     '''Leaf in the boolean query execution tree'''
 
     def __init__(self, word):
-        self._index = None
+        self.index = None
         self._word = word
 
     def __str__(self):
@@ -108,11 +108,11 @@ class WordLeaf(object):
 
     def get_postings(self):
         '''Returns the result of apply the operator node.'''
-        return {posting['doc_id'] for posting in self._index.search(self._word)}
+        return {posting['doc_id'] for posting in self.index.search(self._word)}
 
     def set_index(self, index):
         '''Recursively sets the index for the node and its children.'''
-        self._index = index
+        self.index = index
 
 
 class BooleanExpressionParser(object):

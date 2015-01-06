@@ -1,7 +1,13 @@
+"""
+Provides a getch function that allows to read from keyboard
+in UNIX or Windows command line.
+"""
+
 class _Getch:
 
     """
-    Gets a single character from standard input.  Does not echo to the screen.
+    Gets a single character from standard input.
+    Does not echo to the screen.
     """
 
     def __init__(self):
@@ -17,7 +23,8 @@ class _Getch:
 class _GetchUnix:
 
     """
-    Gets a single character from UNIX standard input.  Does not echo to the screen.
+    Gets a single character from UNIX standard input.
+    Does not echo to the screen.
     """
 
     def __init__(self):
@@ -41,7 +48,8 @@ class _GetchUnix:
 class _GetchWindows:
 
     """
-    Gets a single character from Windows standard input.  Does not echo to the screen.
+    Gets a single character from Windows standard input.
+    Does not echo to the screen.
     """
 
     def __init__(self):

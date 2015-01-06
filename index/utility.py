@@ -58,7 +58,8 @@ def tf_idf(term_frequency, document_frequency, doc_nbr):
     '''
     if term_frequency == 0:
         return 0
-    return (log(term_frequency + 1) / log(10)) * log(doc_nbr / document_frequency) / log(10)
+    return (log(term_frequency + 1) / log(10)) \
+        * log(doc_nbr / document_frequency) / log(10)
 
 
 def flatten(dic):
@@ -102,7 +103,10 @@ def compute_tfidf_for_word(word, vector, index):
 
 
 def compute_query_vector(query_words, statistic_function):
-    '''Computes a vector representing a query given the words and a statistic to compute.'''
+    '''
+    Computes a vector representing a query
+    given the words and a statistic to compute.
+    '''
     query_vector = {}
     for word in query_words:
         query_vector[word] = statistic_function(word, query_words)

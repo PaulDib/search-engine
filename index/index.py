@@ -4,8 +4,10 @@ Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
 from .document_index import DocumentIndex, StructuredDocument
-from .utility import merge_dictionaries, tf_idf, norm, compute_query_vector, compute_norm_count_for_word
-from .constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
+from .utility import merge_dictionaries, tf_idf, norm, \
+                     compute_query_vector, compute_norm_count_for_word
+from .constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF,\
+                       NORM_TFIDF, START, END
 
 
 class Index:
@@ -31,7 +33,8 @@ class Index:
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return StructuredDocument(self._getdocument_content(doc_id), self._config)
+        return StructuredDocument(self._getdocument_content(doc_id),
+                                  self._config)
 
     def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
@@ -58,7 +61,8 @@ class Index:
 
     def compute_tfidf_for_word(self, word, vector):
         '''
-        Computes the tfidf for one word in one vector, using the current index statistics.
+        Computes the tfidf for one word in one vector,
+        using the current index statistics.
         '''
         if word in self._document_frequencies:
             weight_input = tf_idf(vector[word][COUNT],
@@ -80,7 +84,7 @@ class Index:
                     doc_id = doc[DOC_ID]
                     weight_doc = doc[weight_key]
                     if doc_id in results:
-                        results[doc_id] = results[doc_id] + weight_doc * weight_input
+                        results[doc_id] += weight_doc * weight_input
                     else:
                         results[doc_id] = weight_doc * weight_input
         return results
@@ -133,6 +137,9 @@ class Index:
                 self._add_document_to_index(doc_id, document_content)
 
     def _init_statistics(self):
+        '''
+        Initializes statistics on the index.
+        '''
         # TODO: Refactor
         self._document_frequencies = {}
         self._number_of_docs = len(self._index)

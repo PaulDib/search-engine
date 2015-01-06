@@ -4,6 +4,7 @@ from index.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
 from math import ceil
 from pylab import *
 
+
 def read_queries(file_path):
     queries = {}
     query_id = 0
@@ -63,9 +64,6 @@ def compute_recall_and_precision(queries, expected, index, query_type, chart_tit
         average_prec_list.append(average_prec)
         average_recall_list.append(average_recall)
 
-    print(average_prec_list)
-    print(average_recall_list)
-
     plot(average_recall_list, average_prec_list)
 
     xlabel('recall')
@@ -73,7 +71,6 @@ def compute_recall_and_precision(queries, expected, index, query_type, chart_tit
     title(chart_title)
     grid(True)
     savefig("images/" + output_path)
-    #show()
 
 
 print('Indexing...')
@@ -84,8 +81,12 @@ queries = read_queries('data/query.text')
 expected = read_expected_results('data/qrels.text')
 
 print('Running queries...')
-compute_recall_and_precision(queries, expected, index, VectorialQueryTfIdf, 'tfidf', 'tfidf.png')
-compute_recall_and_precision(queries, expected, index, VectorialQueryNormCount, 'normalized_count', 'normalized_count.png')
+compute_recall_and_precision(queries, expected, index,
+                             VectorialQueryTfIdf, 'tfidf', 'tfidf.png')
+# compute_recall_and_precision(queries, expected, index,
+#                               VectorialQueryNormCount, 'normalized_count',
+#                               'normalized_count.png')
+
 
 
 

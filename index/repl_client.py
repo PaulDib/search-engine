@@ -38,8 +38,8 @@ class ReplClient(object):
     def _start_repl(self):
         '''Starts the REPL and prompts the user.'''
         user_input = ""
-        print(
-            "Starting interactive environment in directory " + self._working_dir)
+        print("Starting interactive environment in directory "
+              + self._working_dir)
         while user_input != "exit":
             user_input = self._command_line.read_input("> ")
             if not user_input:
@@ -53,6 +53,9 @@ class ReplClient(object):
         print("Exiting...")
 
     def _parse_input(self, user_input):
+        '''
+        Parses user input and returns corresponding action.
+        '''
         split = user_input.split()
         command = split[0]
         arguments = split[1:] if len(split) > 1 else []
