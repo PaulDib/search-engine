@@ -55,3 +55,16 @@ class VectorialQueryNormCount(VectorialQuery):
         '''
         result_dict = index.get_matching_documents(self._index, NORM_COUNT)
         return _sort_results(result_dict)
+
+
+class VectorialQueryProbabilistic(VectorialQuery):
+
+    '''Represents a probabilistic query.'''
+
+    def execute(self, index):
+        '''
+        Executes the query against the index
+        and returns documents sorted by descending matching score.
+        '''
+        result_dict = index.probabilistic_query(self._index)
+        return _sort_results(result_dict)

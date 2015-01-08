@@ -6,7 +6,7 @@ from pylab import *
 import time
 from ...core.index import Index
 from ...core.index_config import IndexConfig
-from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
+from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount, VectorialQueryProbabilistic
 
 
 def generate_recall_precision_graph(x_data, y_data, chart_title, output_folder):
@@ -86,7 +86,7 @@ class StatsGenerator(object):
         start_time = time.time()
         generator = RecallPrecisionGenerator(index, VectorialQueryTfIdf, queries, expected)
         (recall, prec) = generator.generate(self._iterations)
-        generate_recall_precision_graph(recall, prec, 'tfidf', "")
+        generate_recall_precision_graph(recall, prec, 'tfidf', self._output_folder)
         print('TFIDF queries ran in {0:.4f} seconds.'.format(time.time() - start_time))
 
         start_time = time.time()
@@ -94,6 +94,12 @@ class StatsGenerator(object):
         (recall, prec) = generator.generate(self._iterations)
         generate_recall_precision_graph(recall, prec, 'normalized_frequency', self._output_folder)
         print('Normalized freq. queries ran in {0:.4f} seconds.'.format(time.time() - start_time))
+
+        start_time = time.time()
+        generator = RecallPrecisionGenerator(index, VectorialQueryProbabilistic, queries, expected)
+        (recall, prec) = generator.generate(self._iterations)
+        generate_recall_precision_graph(recall, prec, 'probabilistic', self._output_folder)
+        print('Probabilistic queries ran in {0:.4f} seconds.'.format(time.time() - start_time))
 
     def _read_queries(self):
         '''
@@ -149,13 +155,13 @@ class RecallPrecisionGenerator(object):
         '''
         average_prec_list = []
         average_recall_list = []
-        percentage_step = int(ceil(100/iterations))
 
-        for percentage in range(1, 100, percentage_step):
+        for percentage in range(1, iterations):
             average_prec = 0
             average_recall = 0
+            perc = int(ceil(percentage / iterations * 100))
             for (query_id, _) in self._queries.items():
-                (recall, prec) = self._compute_recall_and_precision(query_id, percentage)
+                (recall, prec) = self._compute_recall_and_precision(query_id, perc)
                 average_recall = average_recall + recall
                 average_prec = average_prec + prec
             average_recall = average_recall / len(self._queries)

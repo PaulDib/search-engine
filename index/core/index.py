@@ -3,6 +3,7 @@ Main entry point of the package.
 Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
+from math import log
 from .document_index import DocumentIndex, StructuredDocument
 from .utility import merge_dictionaries, tf_idf, norm, \
                      compute_query_vector, compute_norm_count_for_word
@@ -71,6 +72,24 @@ class Index:
             return weight_input
         else:
             return 0.0
+
+    def probabilistic_query(self, query_words):
+        '''
+        Computes the RSV (Retrieval Status Value) for all documents
+        with respect to the query.
+        '''
+        results = {}
+        for word in query_words:
+            if word in self._inverted_index:
+                document_frequency = len(self._inverted_index[word])
+                irrelevant_prob = document_frequency / self._number_of_docs
+                relevant_prob = 0.5
+                for doc in self._inverted_index[word]:
+                    if doc[DOC_ID] in results:
+                        results[doc[DOC_ID]] += log(relevant_prob/(1 - relevant_prob)) - log(irrelevant_prob/(1 - irrelevant_prob))
+                    else:
+                        results[doc[DOC_ID]] = log(relevant_prob/(1 - relevant_prob)) - log(irrelevant_prob/(1 - irrelevant_prob))
+        return results
 
     def _scalar_product_with_index(self, query_vector, weight_key):
         '''

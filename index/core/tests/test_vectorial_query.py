@@ -3,7 +3,7 @@ import unittest
 from math import sqrt
 from ..index import Index
 from ..index_config import IndexConfig
-from ..vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
+from ..vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount, VectorialQueryProbabilistic
 
 
 class VectorialQueryTests(unittest.TestCase):
@@ -31,5 +31,15 @@ class VectorialQueryTests(unittest.TestCase):
         for (doc_id, cos) in results:
             if doc_id == 1:
                 self.assertEqual(0.5/doc_norm, cos)
+                success = True
+        self.assertTrue(success)
+
+    def test_vectorial_query_proba(self):
+        '''Tests a vectorial query that uses normalized count as a weight.'''
+        query = VectorialQueryProbabilistic("algebraic")
+        results = query.execute(self._index)
+        success = False
+        for (doc_id, cos) in results:
+            if doc_id == 1:
                 success = True
         self.assertTrue(success)

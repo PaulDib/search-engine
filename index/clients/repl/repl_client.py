@@ -8,7 +8,7 @@ from ...core.index import Index
 from ...core.index_config import IndexConfig
 from ...core.index_serializer import IndexSerializer
 from ...core.boolean_query import BooleanQuery
-from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount
+from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount, VectorialQueryProbabilistic
 from .command_line import CommandLine
 
 
@@ -29,7 +29,8 @@ class ReplClient(object):
             'saveIndex':  SaveIndexAction,
             'loadIndex': LoadIndexAction,
             'tfidfVectorial': VectorialQueryTfidfAction,
-            'normCountVectorial': VectorialQueryNormCountAction
+            'normCountVectorial': VectorialQueryNormCountAction,
+            'probabilisticVectorial': VectorialQueryProbabilisticAction
         }
         self._command_line = CommandLine(
             autocomplete_actions=self._actions.keys())
@@ -194,6 +195,18 @@ class VectorialQueryNormCountAction(VectorialQueryAction):
     def help(self):
         return '''Wrong use.
         Example: normCountVectorial this is a vectorial query'''
+
+
+class VectorialQueryProbabilisticAction(VectorialQueryAction):
+
+    def __init__(self, client, arguments):
+        super(VectorialQueryProbabilisticAction, self).__init__(client, arguments)
+        query_text = " ".join(arguments)
+        self._query = VectorialQueryProbabilistic(query_text)
+
+    def help(self):
+        return '''Wrong use.
+        Example: probabilisticVectorial this is a vectorial query'''
 
 
 class SaveIndexAction(Action):
