@@ -83,12 +83,13 @@ class Index:
             if word in self._inverted_index:
                 document_frequency = len(self._inverted_index[word])
                 irrelevant_prob = document_frequency / self._number_of_docs
-                relevant_prob = 0.5
+                relevant_prob = 1/3 + 2/3*document_frequency/self._number_of_docs
                 for doc in self._inverted_index[word]:
+                    term = log(relevant_prob/(1 - relevant_prob)) - log(irrelevant_prob/(1 - irrelevant_prob))
                     if doc[DOC_ID] in results:
-                        results[doc[DOC_ID]] += log(relevant_prob/(1 - relevant_prob)) - log(irrelevant_prob/(1 - irrelevant_prob))
+                        results[doc[DOC_ID]] += term
                     else:
-                        results[doc[DOC_ID]] = log(relevant_prob/(1 - relevant_prob)) - log(irrelevant_prob/(1 - irrelevant_prob))
+                        results[doc[DOC_ID]] = term
         return results
 
     def _scalar_product_with_index(self, query_vector, weight_key):

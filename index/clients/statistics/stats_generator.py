@@ -156,18 +156,25 @@ class RecallPrecisionGenerator(object):
         average_prec_list = []
         average_recall_list = []
 
-        for percentage in range(1, iterations):
-            average_prec = 0
-            average_recall = 0
-            perc = int(ceil(percentage / iterations * 100))
-            for (query_id, _) in self._queries.items():
-                (recall, prec) = self._compute_recall_and_precision(query_id, perc)
-                average_recall = average_recall + recall
-                average_prec = average_prec + prec
-            average_recall = average_recall / len(self._queries)
-            average_prec = average_prec / len(self._queries)
-            average_recall_list.append(average_recall)
-            average_prec_list.append(average_prec)
+        for part in range(1, 3):
+            if part == 1:
+                offset = 0
+                multip = 0.05
+            else:
+                offset = 5
+                multip = 1
+            for percentage in range(1, iterations):
+                average_prec = 0
+                average_recall = 0
+                perc = percentage / iterations * 100 * multip + offset
+                for (query_id, _) in self._queries.items():
+                    (recall, prec) = self._compute_recall_and_precision(query_id, perc)
+                    average_recall = average_recall + recall
+                    average_prec = average_prec + prec
+                average_recall = average_recall / len(self._queries)
+                average_prec = average_prec / len(self._queries)
+                average_recall_list.append(average_recall)
+                average_prec_list.append(average_prec)
 
         return (average_recall_list, average_prec_list)
 
@@ -181,7 +188,6 @@ class RecallPrecisionGenerator(object):
 
         query_results = self._get_query_results(query_id)
         results_len = len(query_results)
-
         top = int(ceil(results_len*percentage/100))
         query_results = query_results[0:top]
         results_len = top
