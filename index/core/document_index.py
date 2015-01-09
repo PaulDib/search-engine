@@ -108,14 +108,6 @@ class DocumentIndex(object):
             field_content = doc_content[field]
             field_wc = self._compute_word_count(field_content)
             self.word_count = merge_dictionaries(self.word_count, field_wc)
-            field_max = max(field_wc.values()) if field_wc else -1
-            self._maxword_count = \
-                field_max \
-                if field_max > self._maxword_count \
-                else self._maxword_count
-        self.word_count = {
-            word: {COUNT: count, NORM_COUNT: count / self._maxword_count}
-            for word, count in self.word_count.items()}
 
     def _compute_word_count(self, field_content):
         '''Computes the word count for a string.'''

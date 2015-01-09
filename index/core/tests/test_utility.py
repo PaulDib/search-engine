@@ -23,6 +23,12 @@ class UtilityTests(unittest.TestCase):
         expected = {"key1": 4, "key2": 9, "key3": 5}
         self.assertEqual(expected, merge_dictionaries(a, b))
 
+    def test_merge_dictionaries_of_dict(self):
+        a = {"key1": {"key2" : 1}}
+        b = {"key1": {"key3" : 2}}
+        expected = {"key1": {"key2": 1, "key3" : 2}}
+        self.assertEqual(expected, merge_dictionaries(a, b, merge_dictionaries))
+
     def test_flatten_single_depth(self):
         dic = {"a": {"b": [0, 1, 2], "c": 1}}
         flat = {"a.b": [0, 1, 2], "a.c": 1}

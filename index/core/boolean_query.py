@@ -108,7 +108,7 @@ class WordLeaf(object):
 
     def get_postings(self):
         '''Returns the result of apply the operator node.'''
-        return {posting['doc_id'] for posting in self.index.search(self._word)}
+        return {doc_id for doc_id in self.index.search(self._word)}
 
     def set_index(self, index):
         '''Recursively sets the index for the node and its children.'''

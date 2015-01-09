@@ -2,7 +2,6 @@
 Provides general purpose functions.
 '''
 import re
-from .constants import NORM_COUNT
 from math import log, sqrt
 
 
@@ -16,12 +15,12 @@ def split_content(content):
     return re.findall(r"[\w]+", content)
 
 
-def merge_dictionaries(dict_a, dict_b):
+def merge_dictionaries(dict_a, dict_b, merging_func=lambda x, y: x + y):
     '''Merge two dictionaries by summing values'''
     res = dict_a
     for k in dict_b:
         if k in res:
-            res[k] = res[k] + dict_b[k]
+            res[k] = merging_func(res[k], dict_b[k])
         else:
             res[k] = dict_b[k]
     return res
@@ -92,23 +91,23 @@ def norm(word_dict, weight_key=""):
     return sqrt(_sum)
 
 
-def compute_norm_count_for_word(word, vector):
-    '''Gets the normalized count for one word in a vector.'''
-    return vector[word][NORM_COUNT]
-
-
-def compute_tfidf_for_word(word, vector, index):
-    '''Computes the tf idf for a word in the vector against the index.'''
-    return index.compute_tfidf_for_word(word, vector)
-
-
-def compute_query_vector(query_words, statistic_function):
+def scalar_product(vector_a, vector_b):
     '''
-    Computes a vector representing a query
-    given the words and a statistic to compute.
+    Computes the scalar product of two dictionaries.
     '''
-    query_vector = {}
-    for word in query_words:
-        query_vector[word] = statistic_function(word, query_words)
-    return query_vector
- 
+    result = 0
+    if len(vector_a) > len(vector_b):
+        tmp = vector_b
+        vector_b = vector_a
+        vector_a = tmp
+    for word in vector_a:
+        if word in vector_b:
+            result += vector_a[word]*vector_b[word]
+    return result
+
+
+def probabilistic_weight(term_prob):
+    '''
+    Computes the probabilistic weight for a word.
+    '''
+    return log(term_prob/(1 - term_prob))

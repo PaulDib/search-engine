@@ -3,12 +3,9 @@ Main entry point of the package.
 Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
-from math import log
 from .document_index import DocumentIndex, StructuredDocument
-from .utility import merge_dictionaries, tf_idf, norm, \
-                     compute_query_vector, compute_norm_count_for_word
-from .constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF,\
-                       NORM_TFIDF, START, END
+from .utility import merge_dictionaries, tf_idf
+from .constants import FILE, WORDS, START, END
 
 
 class Index:
@@ -30,31 +27,16 @@ class Index:
         '''Returns a list of doc_ids containing the requested word.'''
         standardized_word = word.lower()
         return self._inverted_index[standardized_word] \
-            if standardized_word in self._inverted_index else []
+            if standardized_word in self._inverted_index else {}
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return StructuredDocument(self._getdocument_content(doc_id),
+        return StructuredDocument(self._get_document_content(doc_id),
                                   self._config)
 
     def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
         return self._index[doc_id] if doc_id in self._index else {}
-
-    def get_matching_documents(self, document_words, weight_key=NORM_TFIDF):
-        '''
-        Returns documents similar to the input by computing the cosine of the
-        input document to the collection, using a specific weight as components
-        of the vectors.
-        '''
-        if weight_key == NORM_COUNT:
-            stat_func = compute_norm_count_for_word
-        else:
-            stat_func = self.compute_tfidf_for_word
-        query_vector = compute_query_vector(document_words, stat_func)
-        results = self._scalar_product_with_index(query_vector, weight_key)
-        results = self._normalize_results(query_vector, results, weight_key)
-        return results
 
     def get_all_doc_ids(self):
         '''Returns a list with all doc ids in the index'''
@@ -65,59 +47,13 @@ class Index:
         Computes the tfidf for one word in one vector,
         using the current index statistics.
         '''
-        if word in self._document_frequencies:
-            weight_input = tf_idf(vector[word][COUNT],
-                                  self._document_frequencies[word],
-                                  self._number_of_docs)
-            return weight_input
+        if word in self._inverted_index:
+            tfidf = tf_idf(vector[word],
+                           len(self._inverted_index[word]),
+                           self._number_of_docs)
+            return tfidf
         else:
             return 0.0
-
-    def probabilistic_query(self, query_words):
-        '''
-        Computes the RSV (Retrieval Status Value) for all documents
-        with respect to the query.
-        '''
-        results = {}
-        for word in query_words:
-            if word in self._inverted_index:
-                document_frequency = len(self._inverted_index[word])
-                irrelevant_prob = document_frequency / self._number_of_docs
-                relevant_prob = 1/3 + 2/3*document_frequency/self._number_of_docs
-                for doc in self._inverted_index[word]:
-                    term = log(relevant_prob/(1 - relevant_prob)) - log(irrelevant_prob/(1 - irrelevant_prob))
-                    if doc[DOC_ID] in results:
-                        results[doc[DOC_ID]] += term
-                    else:
-                        results[doc[DOC_ID]] = term
-        return results
-
-    def _scalar_product_with_index(self, query_vector, weight_key):
-        '''
-        Computes the scalar product between a query vector and the indexed docs.
-        '''
-        results = {}
-        for word in query_vector:
-            if word in self._inverted_index:
-                weight_input = query_vector[word]
-                for doc in self._inverted_index[word]:
-                    doc_id = doc[DOC_ID]
-                    weight_doc = doc[weight_key]
-                    if doc_id in results:
-                        results[doc_id] += weight_doc * weight_input
-                    else:
-                        results[doc_id] = weight_doc * weight_input
-        return results
-
-    def _normalize_results(self, query_vector, results, weight_key):
-        '''
-        Divide results by the norm of the two input vectors.
-        '''
-        query_norm = norm(query_vector)
-        for doc_id in results:
-            result_norm = norm(self._index[doc_id][WORDS], weight_key)
-            results[doc_id] = results[doc_id] / (result_norm * query_norm)
-        return results
 
     def _init_index(self):
         '''Initializes the index and inverted index.'''
@@ -128,8 +64,7 @@ class Index:
                 self._index_file(file)
         else:
             raise TypeError("dataFiles should be a string or a list")
-
-        self._init_statistics()
+        self._number_of_docs = len(self._index)
 
     def _index_file(self, file):
         '''Populating the index with the results for one file.'''
@@ -156,32 +91,6 @@ class Index:
                     doc_id, file, document_start_pos, i - 1)
                 self._add_document_to_index(doc_id, document_content)
 
-    def _init_statistics(self):
-        '''
-        Initializes statistics on the index.
-        '''
-        # TODO: Refactor
-        self._document_frequencies = {}
-        self._number_of_docs = len(self._index)
-        for word in self._inverted_index:
-            doc_frequency = len(self._inverted_index[word])
-            self._document_frequencies[word] = doc_frequency
-            for doc in self._inverted_index[word]:
-                tfidf = tf_idf(doc[COUNT], doc_frequency, self._number_of_docs)
-                doc[TFIDF] = tfidf
-                self._index[doc[DOC_ID]][WORDS][word][TFIDF] = tfidf
-            max_tfidf = max({doc[TFIDF] for doc in self._inverted_index[word]})
-            if max_tfidf > 0:
-                for doc in self._inverted_index[word]:
-                    doc[NORM_TFIDF] = doc[TFIDF] / max_tfidf
-                    self._index[doc[DOC_ID]][WORDS][word][NORM_TFIDF] = \
-                        doc[TFIDF] / max_tfidf
-            else:
-                for doc in self._inverted_index[word]:
-                    doc[NORM_TFIDF] = doc[TFIDF]
-                    self._index[doc[DOC_ID]][WORDS][
-                        word][NORM_TFIDF] = doc[TFIDF]
-
     def _save_document_location(self, doc_id, file, start_pos, end_pos):
         '''Saves the position of the document in its file for later reads.'''
         self._index[doc_id] = {FILE: file, START: start_pos, END: end_pos}
@@ -191,17 +100,13 @@ class Index:
         word_count = DocumentIndex(content, self._config).get_word_count()
         self._index[doc_id][WORDS] = word_count
         inverted_words = {
-            word: [{
-                DOC_ID: doc_id,
-                COUNT: word_count[word][COUNT],
-                NORM_COUNT:  word_count[word][NORM_COUNT]
-            }]
-            for word in word_count if word_count[word][COUNT] > 0
+            word: {doc_id: word_count[word]}
+            for word in word_count if word_count[word] > 0
         }
         self._inverted_index = merge_dictionaries(
-            self._inverted_index, inverted_words)
+            self._inverted_index, inverted_words, merge_dictionaries)
 
-    def _getdocument_content(self, doc_id):
+    def _get_document_content(self, doc_id):
         '''Outputs the document content as a list of lines'''
         if doc_id in self._index:
             content = []

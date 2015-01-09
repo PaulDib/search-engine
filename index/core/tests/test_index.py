@@ -16,25 +16,20 @@ class IndexTests(unittest.TestCase):
         index = Index(
             os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         expected = {
-            'subtractions': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'language': [
-                {COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1,
-                 TFIDF: tf_idf(1, 2, 2), NORM_TFIDF: 0.0},
-                {COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2,
-                 TFIDF: tf_idf(1, 2, 2), NORM_TFIDF: 0.0}
-            ],
-            'extraction': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'of': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'computers': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'for': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'algebraic': [{COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'repeated': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'digital': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'preliminary': [{COUNT: 2, NORM_COUNT: 1.0, DOC_ID: 1, TFIDF: tf_idf(2, 1, 2), NORM_TFIDF: 1.0}],
-            'report': [{COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'international': [{COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'by': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'roots': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}]
+            'subtractions': {2:1},
+            'language': {1:1, 2:1},
+            'extraction': {2:1},
+            'of': {2:1},
+            'computers': {2:1},
+            'for': {2:1},
+            'algebraic': {1:1},
+            'repeated': {2:1},
+            'digital': {2:1},
+            'preliminary': {1:2},
+            'report': {1:1},
+            'international': {1:1},
+            'by': {2:1},
+            'roots': {2:1}
         }
         self.assertEqual(expected, index._inverted_index)
 
@@ -48,30 +43,22 @@ class IndexTests(unittest.TestCase):
         index = Index(
             os.path.dirname(os.path.realpath(__file__)) + "/test_data", config)
         expected = {
-            'subtractions': [{COUNT: 1, DOC_ID: 2, NORM_COUNT: 1.0, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'language': [
-                {COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1,
-                 TFIDF: tf_idf(1, 2, 2), NORM_TFIDF: 0.0},
-                {COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2,
-                 TFIDF: tf_idf(1, 2, 2), NORM_TFIDF: 0.0}
-            ],
-            'extraction': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'computers': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'algebraic': [{COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'repeated': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'digital': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'preliminary': [{COUNT: 2, NORM_COUNT: 1.0, DOC_ID: 1, TFIDF: tf_idf(2, 1, 2), NORM_TFIDF: 1.0}],
-            'report': [{COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'international': [{COUNT: 1, NORM_COUNT: 0.5, DOC_ID: 1, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}],
-            'roots': [{COUNT: 1, NORM_COUNT: 1.0, DOC_ID: 2, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}]
+            'subtractions': {2:1},
+            'language': {1:1, 2:1},
+            'extraction': {2:1},
+            'computers': {2:1},
+            'algebraic': {1:1},
+            'repeated': {2:1},
+            'digital': {2:1},
+            'preliminary': {1:2},
+            'report': {1:1},
+            'international': {1:1},
+            'roots': {2:1}
         }
         self.assertEqual(expected, index._inverted_index)
 
     def test_Search(self):
-        expected = [
-            {COUNT: 1, DOC_ID: 1, NORM_COUNT: 0.5, TFIDF: 0.0, NORM_TFIDF: 0},
-            {COUNT: 1, DOC_ID: 2, NORM_COUNT: 1.0, TFIDF: 0.0, NORM_TFIDF: 0}
-        ]
+        expected = {1:1, 2:1}
         index = Index(
             os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
         self.assertEqual([], index.search('thereShouldBeNoDocument'))
@@ -86,11 +73,11 @@ class IndexTests(unittest.TestCase):
             FILE: data_path,
             START: 0,
             WORDS: {
-                'algebraic': {COUNT: 1, NORM_COUNT: 0.5, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0},
-                'international': {COUNT: 1, NORM_COUNT: 0.5, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0},
-                'language': {COUNT: 1, NORM_COUNT: 0.5, TFIDF: tf_idf(1, 2, 2), NORM_TFIDF: 0.0},
-                'preliminary': {COUNT: 2, NORM_COUNT: 1.0, TFIDF: tf_idf(2, 1, 2), NORM_TFIDF: 1.0},
-                'report': {COUNT: 1, NORM_COUNT: 0.5, TFIDF: tf_idf(1, 1, 2), NORM_TFIDF: 1.0}
+                'algebraic': 1,
+                'international': 1,
+                'language': 1,
+                'preliminary': 2,
+                'report': 1
             }
         }
         self.assertEqual({}, index.index_by_doc_id(404))

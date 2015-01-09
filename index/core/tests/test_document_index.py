@@ -26,11 +26,11 @@ class DocumentIndexTests(unittest.TestCase):
 
     def test_create_index(self):
         expected = {
-            'algebraic': {COUNT: 1, NORM_COUNT: 0.5},
-            'international': {COUNT: 1, NORM_COUNT: 0.5},
-            'language': {COUNT: 1, NORM_COUNT: 0.5},
-            'preliminary': {COUNT: 2, NORM_COUNT: 1.0},
-            'report': {COUNT: 1, NORM_COUNT: 0.5}
+            'algebraic': 1,
+            'international': 1,
+            'language': 1,
+            'preliminary': 2,
+            'report': 1
         }
         self.assertEqual(expected, self.doc_index.get_word_count())
 
@@ -43,16 +43,18 @@ class DocumentIndexTests(unittest.TestCase):
         ''' Test document indexing with a plain text document.'''
         plain_text = "a b a"
         doc_idx = DocumentIndex(plain_text)
-        expected = {"a": {COUNT: 2, NORM_COUNT: 1.0},
-                    "b": {COUNT: 1, NORM_COUNT: 0.5}}
+        expected = {
+            "a": 2,
+            "b": 1
+        }
         self.assertEqual(expected, doc_idx.get_word_count())
 
     def test_document_index_plain_text_special_characters(self):
         ''' Test document indexing with a plain text document with special chars.'''
         plain_text = "a - b ? (a)"
         doc_idx = DocumentIndex(plain_text)
-        expected = {"a": {COUNT: 2, NORM_COUNT: 1.0},
-                    "b": {COUNT: 1, NORM_COUNT: 0.5}}
+        expected = {"a": 2,
+                    "b": 1}
         self.assertEqual(expected, doc_idx.get_word_count())
 
     def test_plain_document_get_focus_content(self):
