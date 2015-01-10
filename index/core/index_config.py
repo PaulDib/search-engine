@@ -1,7 +1,7 @@
 '''
 Configuration object for an index.
 '''
-
+from .utility import tokenize
 
 class IndexConfig(object):
 
@@ -21,4 +21,4 @@ class IndexConfig(object):
         '''
         Read a file containing stop words and populates the stop word list.'''
         with open(stop_word_file) as file_ptr:
-            self.stop_words = file_ptr.read().splitlines()
+            self.stop_words = [tokenize(x) for x in file_ptr.read().splitlines()]

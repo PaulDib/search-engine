@@ -2,7 +2,7 @@ import unittest
 import os
 from ..document_index import DocumentIndex, StructuredDocument, PlainDocument
 from ..index_config import IndexConfig
-from ..constants import FILE, DOC_ID, COUNT, NORM_COUNT, WORDS, TFIDF, NORM_TFIDF, START, END
+from ..constants import FILE, WORDS, START, END
 
 
 class DocumentIndexTests(unittest.TestCase):
@@ -26,10 +26,10 @@ class DocumentIndexTests(unittest.TestCase):
 
     def test_create_index(self):
         expected = {
-            'algebraic': 1,
-            'international': 1,
-            'language': 1,
-            'preliminary': 2,
+            'algebra': 1,
+            'intern': 1,
+            'languag': 1,
+            'preliminari': 2,
             'report': 1
         }
         self.assertEqual(expected, self.doc_index.get_word_count())

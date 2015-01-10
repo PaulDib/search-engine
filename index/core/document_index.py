@@ -1,8 +1,7 @@
 '''
 Provides classes to index single documents.
 '''
-from .utility import get_word_list, count_tokens, merge_dictionaries, \
-    filter_words
+from .utility import get_word_list, count_tokens, merge_dictionaries
 import re
 
 
@@ -82,7 +81,8 @@ class DocumentIndex(object):
     '''
     Class containing the indexing result for one document.
     If provided with a indexConfig, the indexing will parse the document
-    and filter stop words. Otherwise, it will be done on the whole content.
+    and filter stop words. Otherwise, indexing will be done on 
+    the whole content.
     '''
 
     def __init__(self, content, indexConfig=None):
@@ -114,7 +114,9 @@ class DocumentIndex(object):
 
     def _tokenize(self, content):
         '''Returns an array of tokens (clean words) in a string.'''
-        tokens = get_word_list(content)
-        if self._config:
-            tokens = filter_words(tokens, self._config.stop_words)
+        if not self._config:
+            stop_words = []
+        else:
+            stop_words = self._config.stop_words
+        tokens = get_word_list(content, stop_words)
         return tokens

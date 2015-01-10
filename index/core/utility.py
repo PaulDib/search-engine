@@ -28,11 +28,14 @@ def merge_dictionaries(dict_a, dict_b, merging_func=lambda x, y: x + y):
     return res
 
 
-def get_word_list(content):
+def get_word_list(content, stop_words):
     '''Gets the list of words in a string'''
+    if not stop_words:
+        stop_words = []
     content = re.sub(r'[^\w\s]', ' ', content)
     word_list = split_content(content)
     word_list = [tokenize(x) for x in word_list]
+    word_list = filter_words(word_list, stop_words)
     return word_list
 
 
