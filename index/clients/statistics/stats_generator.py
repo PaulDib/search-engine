@@ -13,7 +13,7 @@ def generate_recall_precision_graph(x_data, y_data, chart_title, output_folder):
     '''
     Generates a graph with x axis labelled as recall and y axis as precision.
     '''
-    plot(x_data, y_data)
+    plot(x_data, y_data, '', label=chart_title)
     xlabel('recall')
     ylabel('precision')
     title(chart_title)
@@ -78,9 +78,8 @@ class StatsGenerator(object):
         queries = self._read_queries()
         expected = self._read_expected_results()
         print('{0} queries found. Each model will run {0} queries.'.format(
-            len(queries),
-            self._iterations*len(queries)
-            ))
+            len(queries)
+        ))
 
         print('Running queries...')
         start_time = time.time()

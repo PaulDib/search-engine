@@ -4,7 +4,7 @@ Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
 from .document_index import DocumentIndex, StructuredDocument
-from .utility import merge_dictionaries, tf_idf
+from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
 
 
@@ -25,7 +25,7 @@ class Index:
 
     def search(self, word):
         '''Returns a list of doc_ids containing the requested word.'''
-        standardized_word = word.lower()
+        standardized_word = tokenize(word)
         return self._inverted_index[standardized_word] \
             if standardized_word in self._inverted_index else {}
 

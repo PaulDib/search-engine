@@ -3,7 +3,6 @@ Provides classes to index single documents.
 '''
 from .utility import get_word_list, count_tokens, merge_dictionaries, \
     filter_words
-from .constants import COUNT, NORM_COUNT
 import re
 
 

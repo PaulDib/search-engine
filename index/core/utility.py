@@ -3,7 +3,9 @@ Provides general purpose functions.
 '''
 import re
 from math import log, sqrt
+from nltk import PorterStemmer
 
+_stemmer = PorterStemmer()
 
 def filter_words(word_list, stop_words):
     '''Removes stop_words from word_list'''
@@ -30,8 +32,15 @@ def get_word_list(content):
     '''Gets the list of words in a string'''
     content = re.sub(r'[^\w\s]', ' ', content)
     word_list = split_content(content)
-    word_list = [x.lower() for x in word_list]
+    word_list = [tokenize(x) for x in word_list]
     return word_list
+
+
+def tokenize(word):
+    '''
+    Return the token corresponding to the input word.
+    '''
+    return _stemmer.stem_word(word.lower())
 
 
 def count_tokens(tokens):
