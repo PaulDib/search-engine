@@ -19,11 +19,6 @@ class DocumentIndexTests(unittest.TestCase):
         actual = self.doc.field_positions
         self.assertEqual(expected, actual)
 
-    def test_structured_document_get_all_content(self):
-        expected = "Perlis, A. J.\nSamelson,K."
-        actual = self.doc.get_all_content()['.A']
-        self.assertEqual(expected, actual)
-
     def test_create_index(self):
         expected = {
             'algebra': 1,
