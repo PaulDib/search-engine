@@ -1,6 +1,6 @@
 import unittest
 import os
-from ..document_index import DocumentIndex, StructuredDocument, PlainDocument
+from ..document_index import DocumentIndex, CACMStructuredDocument, PlainDocument
 from ..index_config import IndexConfig
 from ..constants import FILE, WORDS, START, END
 
@@ -11,7 +11,7 @@ class DocumentIndexTests(unittest.TestCase):
         with open(os.path.dirname(os.path.realpath(__file__)) + "/test_data") as file:
             self.test_content = file.read().splitlines()
         self.doc_index = DocumentIndex(self.test_content, IndexConfig())
-        self.doc = StructuredDocument(self.test_content, IndexConfig())
+        self.doc = CACMStructuredDocument(self.test_content, IndexConfig())
 
     def test_get_field_positions(self):
         expected = {'.A': 5, '.B': 3, '.I': 0, '.K': -1,

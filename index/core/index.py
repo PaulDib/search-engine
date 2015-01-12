@@ -3,7 +3,7 @@ Main entry point of the package.
 Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
-from .document_index import DocumentIndex, StructuredDocument
+from .document_index import DocumentIndex, CACMStructuredDocument
 from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
 
@@ -31,7 +31,7 @@ class Index:
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return StructuredDocument(self._get_document_content(doc_id),
+        return CACMStructuredDocument(self._get_document_content(doc_id),
                                   self._config)
 
     def index_by_doc_id(self, doc_id):

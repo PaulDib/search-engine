@@ -5,7 +5,7 @@ from .utility import get_word_list, count_tokens, merge_dictionaries
 import re
 
 
-class StructuredDocument(object):
+class CACMStructuredDocument(object):
 
     '''
     Class representing one structured document for read access.
@@ -79,7 +79,7 @@ class DocumentIndex(object):
         self._maxword_count = -1
         if indexConfig:
             self._config = indexConfig
-            self._doc = StructuredDocument(content, indexConfig)
+            self._doc = CACMStructuredDocument(content, indexConfig)
         else:
             self._config = None
             self._doc = PlainDocument(content)
