@@ -11,8 +11,8 @@ class StructuredDocument(object):
     Class representing one structured document for read access.
     '''
 
-    def __init__(self, content, indexConfig):
-        self._config = indexConfig
+    def __init__(self, content, index_config):
+        self._config = index_config
         self._content = content
         self.field_positions = {}
         self._get_field_positions()
