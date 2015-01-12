@@ -2,7 +2,6 @@ import os
 import unittest
 from math import sqrt
 from ..index import Index
-from ..index_config import IndexConfig
 from ..vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount, VectorialQueryProbabilistic
 
 
@@ -10,7 +9,7 @@ class VectorialQueryTests(unittest.TestCase):
 
     def setUp(self):
         self._index = Index(
-            os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+            os.path.dirname(os.path.realpath(__file__)) + "/test_data")
 
     def test_vectorial_query_tfidf(self):
         '''Tests a vectorial query that uses tfidf as a weight.'''

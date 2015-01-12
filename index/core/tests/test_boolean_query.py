@@ -2,14 +2,12 @@ import unittest
 import os
 from ..boolean_query import OperatorNot, OperatorAnd, OperatorOr, OperatorNode, WordLeaf
 from ..index import Index
-from ..index_config import IndexConfig
 
 
 class BooleanQueryTests(unittest.TestCase):
 
     def setUp(self):
-        self._index = Index(
-            os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+        self._index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data")
 
     def test_BooleanQuery_Or_simple(self):
         '''Testing query results for "algrebraic + extraction"'''

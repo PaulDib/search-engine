@@ -5,7 +5,6 @@ import os
 import time
 import traceback
 from ...core.index import Index
-from ...core.index_config import IndexConfig
 from ...core.index_serializer import IndexSerializer
 from ...core.boolean_query import BooleanQuery
 from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount, VectorialQueryProbabilistic
@@ -99,10 +98,9 @@ class CreateIndexAction(Action):
         self._stop_words_file = arguments[1] if len(arguments) == 2 else ""
 
     def execute(self):
-        index_config = IndexConfig(self._stop_words_file)
         print("Indexing files...")
         t_start = time.time()
-        self._client.index = Index(self._data_files, index_config)
+        self._client.index = Index(self._data_files, self._stop_words_file)
         print("Index has been created in " +
               str(time.time() - t_start) + " seconds.")
 

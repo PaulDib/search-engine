@@ -5,7 +5,6 @@ from math import ceil
 from pylab import *
 import time
 from ...core.index import Index
-from ...core.index_config import IndexConfig
 from ...core.vectorial_query import VectorialQueryTfIdf, VectorialQueryNormCount, VectorialQueryProbabilistic
 
 
@@ -70,8 +69,7 @@ class StatsGenerator(object):
         '''
         print('Indexing...')
         start_time = time.time()
-        config = IndexConfig(self._stop_words_file_path)
-        index = Index(self._data_file_path, config)
+        index = Index(self._data_file_path, self._stop_words_file_path)
         print('Indexing done in {0:.4f} seconds.'.format(time.time() - start_time))
 
         print('Reading queries and expected results...')

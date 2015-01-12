@@ -1,7 +1,6 @@
 import unittest
 import os
 from ..index import Index
-from ..index_config import IndexConfig
 from ..constants import FILE, WORDS, START, END
 
 
@@ -12,8 +11,7 @@ class IndexTests(unittest.TestCase):
         Test the counts in the inverted index.
         Does not test the weights.
         '''
-        index = Index(
-            os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+        index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data")
         expected = {
             'subtract': {2:1},
             'languag': {1:1, 2:1},
@@ -37,10 +35,9 @@ class IndexTests(unittest.TestCase):
         Test the counts in the inverted index with stop words.
         Does not test the weights.
         '''
-        config = IndexConfig()
-        config.stop_words = ['of', 'by', 'for']
         index = Index(
-            os.path.dirname(os.path.realpath(__file__)) + "/test_data", config)
+            os.path.dirname(os.path.realpath(__file__)) + "/test_data",
+            stop_words=['of', 'by', 'for'])
         expected = {
          'subtract': {2:1},
             'languag': {1:1, 2:1},
@@ -58,15 +55,14 @@ class IndexTests(unittest.TestCase):
 
     def test_search(self):
         expected = {1:1, 2:1}
-        index = Index(
-            os.path.dirname(os.path.realpath(__file__)) + "/test_data", IndexConfig())
+        index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data")
         self.assertEqual({}, index.search('thereShouldBeNoDocument'))
         self.assertEqual(expected, index.search('Language'))
 
     def test_index_by_doc_id(self):
         data_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "test_data")
-        index = Index(data_path, IndexConfig())
+        index = Index(data_path)
         expected = {
             END: 44,
             FILE: data_path,

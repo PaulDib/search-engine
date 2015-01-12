@@ -3,7 +3,7 @@ Main entry point of the package.
 Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
-from .document_index import DocumentIndex, CACMStructuredDocument
+from .document_index import DocumentIndex, CACMDocumentParser
 from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
 
@@ -14,9 +14,14 @@ class Index:
     Class containing the whole index: documents and the lists of frequencies
     '''
 
-    def __init__(self, dataFiles, indexConfig):
-        self._config = indexConfig
-        self._data_files = dataFiles
+    def __init__(self, data_files, stop_words_file="", stop_words=None):
+        self._data_files = data_files
+        if stop_words:
+            self._stop_words = stop_words
+        elif stop_words_file:
+            self._read_stop_words(stop_words_file)
+        else:
+            self._stop_words = []
         self._index = {}
         self._inverted_index = {}
         self._document_frequencies = {}
@@ -31,8 +36,7 @@ class Index:
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return CACMStructuredDocument(self._get_document_content(doc_id),
-                                  self._config)
+        return CACMDocumentParser().parse_document(self._get_document_content(doc_id))
 
     def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
@@ -55,41 +59,31 @@ class Index:
         else:
             return 0.0
 
+    def _read_stop_words(self, stop_word_file):
+        '''
+        Read a file containing stop words and populates the stop word list.'''
+        if not stop_word_file:
+            self._stop_words = []
+        with open(stop_word_file) as file_ptr:
+            self._stop_words = [tokenize(x) for x in file_ptr.read().splitlines()]
+
     def _init_index(self):
         '''Initializes the index and inverted index.'''
         if isinstance(self._data_files, str):
             self._index_file(self._data_files)
         elif type(self._data_files) is list:
-            for file in self._data_files:
-                self._index_file(file)
+            for file_path in self._data_files:
+                self._index_file(file_path)
         else:
             raise TypeError("dataFiles should be a string or a list")
         self._number_of_docs = len(self._index)
 
-    def _index_file(self, file):
+    def _index_file(self, file_path):
         '''Populating the index with the results for one file.'''
-        with open(file) as file_ptr:
-            doc_id = None
-            document_content = []
-            i = 0
-            document_start_pos = 0
-            for i, line in enumerate(file_ptr):
-                if line.startswith(self._config.id_marker):
-                    if doc_id is not None:
-                        # Indexing previous document
-                        self._save_document_location(
-                            doc_id, file, document_start_pos, i - 1)
-                        self._add_document_to_index(doc_id, document_content)
-                    doc_id = int(line[len(self._config.id_marker):])
-                    document_start_pos = i
-                    document_content = []
-                document_content = document_content + [line]
-
-            # Handling last document.
-            if doc_id is not None:
-                self._save_document_location(
-                    doc_id, file, document_start_pos, i - 1)
-                self._add_document_to_index(doc_id, document_content)
+        parser = CACMDocumentParser(file_path)
+        for (start_pos, end_pos, document) in parser.get_documents():
+            self._save_document_location(document.get_doc_id(), file_path, start_pos, end_pos)
+            self._add_document_to_index(document.get_doc_id(), document.get_content())
 
     def _save_document_location(self, doc_id, file, start_pos, end_pos):
         '''Saves the position of the document in its file for later reads.'''
@@ -97,7 +91,7 @@ class Index:
 
     def _add_document_to_index(self, doc_id, content):
         '''Populating the index with the result for one document.'''
-        word_count = DocumentIndex(content, self._config).get_word_count()
+        word_count = DocumentIndex(content, self._stop_words).get_word_count()
         self._index[doc_id][WORDS] = word_count
         inverted_words = {
             word: {doc_id: word_count[word]}
