@@ -103,11 +103,11 @@ class Index:
     def _get_document_content(self, doc_id):
         '''Outputs the document content as a list of lines'''
         if doc_id in self._index:
-            content = []
+            content = ""
             doc_info = self._index[doc_id]
             with open(doc_info[FILE]) as file_ptr:
                 for i, line in enumerate(file_ptr):
                     if i >= doc_info[START] and i <= doc_info[END]:
-                        content = content + [line]
+                        content = content + "\n" + line
             return content
         raise ValueError("doc " + doc_id + " not found")

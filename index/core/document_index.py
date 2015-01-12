@@ -1,21 +1,28 @@
 '''
 Provides classes to index single documents.
 '''
-from .utility import get_word_list, count_tokens, merge_dictionaries
+from .utility import get_word_list, count_tokens
 import re
 
 
 class CACMDocumentParser(object):
+
+    '''Contains the CACM document parsing logic.'''
+
     def __init__(self, file_path=""):
         self._file_ptr = None
         self._file_path = file_path
-        self._fields = ["\.I", "\.T", "\.W", "\.K", "\.B", "\.A", "\.N", "\.X", "\.K"]
-        self._focus_fields = ["\.T", "\.W", "\.K"]
-        self._id_marker = ".I"
-        self._title_marker = "\.T"
-        
+        self._fields = [r"\.I", r"\.T", r"\.W", r"\.K", r"\.B", r"\.A", r"\.N", r"\.X", r"\.K"]
+        self._focus_fields = [r"\.T", r"\.W", r"\.K"]
+        self._id_marker = r".I"
+        self._title_marker = r"\.T"
+
     def get_documents(self):
-        self._file_ptr = open(self._file_path, 'r') 
+        '''
+        Generator.
+        Iterates over all the documents in the file.
+        '''
+        self._file_ptr = open(self._file_path, 'r')
         document_content = ""
         i = 0
         document_start_pos = 0
