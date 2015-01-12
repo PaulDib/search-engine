@@ -17,17 +17,10 @@ class StructuredDocument(object):
         self.field_positions = {}
         self._get_field_positions()
 
-    def get_focus_content(self):
+    def get_content(self):
         '''Returns the indexed content of the document.'''
         res = {}
         for field in self._config.focus_fields:
-            res[field] = self._get_field_content(field)
-        return res
-
-    def get_all_content(self):
-        '''Returns the whole content of the document.'''
-        res = {}
-        for field in self._config.fields:
             res[field] = self._get_field_content(field)
         return res
 
@@ -67,13 +60,9 @@ class PlainDocument(object):
     def __init__(self, content):
         self._content = content
 
-    def get_all_content(self):
+    def get_content(self):
         '''Returns the whole content of the document.'''
         return {'all': self._content}
-
-    def get_focus_content(self):
-        '''Returns the indexed content of the document.'''
-        return self.get_all_content()
 
 
 class DocumentIndex(object):
@@ -102,7 +91,7 @@ class DocumentIndex(object):
 
     def _init_index(self):
         '''Indexes one document and populates word_count.'''
-        doc_content = self._doc.get_focus_content()
+        doc_content = self._doc.get_content()
         for field in doc_content:
             field_content = doc_content[field]
             field_wc = self._compute_word_count(field_content)

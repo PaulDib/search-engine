@@ -57,7 +57,7 @@ class DocumentIndexTests(unittest.TestCase):
                     "b": 1}
         self.assertEqual(expected, doc_idx.get_word_count())
 
-    def test_plain_document_get_focus_content(self):
+    def test_plain_document_get_content(self):
         plain_text = "a b a"
         plainDoc = PlainDocument(plain_text)
-        self.assertEqual(plain_text, plainDoc.get_focus_content()['all'])
+        self.assertEqual(plain_text, plainDoc.get_content()['all'])
