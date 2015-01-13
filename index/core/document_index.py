@@ -5,17 +5,17 @@ from .utility import get_word_list, count_tokens
 import re
 
 
-class CACMDocumentParser(object):
+class DocumentParser(object):
 
-    '''Contains the CACM document parsing logic.'''
+    '''
+    Contains base code for parsing multiple documents
+    in a file.
+    '''
 
     def __init__(self, file_path=""):
         self._file_ptr = None
         self._file_path = file_path
-        self._fields = [r"\.I", r"\.T", r"\.W", r"\.K", r"\.B", r"\.A", r"\.N", r"\.X", r"\.K"]
-        self._focus_fields = [r"\.T", r"\.W", r"\.K"]
-        self._id_marker = r".I"
-        self._title_marker = r"\.T"
+        self._start_marker = None
 
     def get_documents(self):
         '''
@@ -27,7 +27,7 @@ class CACMDocumentParser(object):
         i = 0
         document_start_pos = 0
         for i, line in enumerate(self._file_ptr):
-            if line.startswith(self._id_marker):
+            if line.startswith(self._start_marker):
                 if document_content:
                     # Indexing previous document
                     doc = self.parse_document(document_content)
@@ -54,11 +54,66 @@ class CACMDocumentParser(object):
 
     def _extract_title(self, content):
         '''Extracts the title from the whole content.'''
+
+        pass
+
+    def _extract_focus_content(self, content):
+        '''Extracts the interesting content.'''
+        pass
+
+    def _extract_doc_id(self, content):
+        '''Extracts the interesting content.'''
+        pass
+
+
+class INEXDocumentParser(DocumentParser):
+
+    '''Contains the INEX document parsing logic.'''
+
+    def __init__(self, file_path=""):
+        super().__init__(file_path)
+        self._start_marker = '<article>'
+        self._id_pattern = r'<name id="(?P<id>\d+)">'
+        self._title_pattern = r'<name.*>(?P<title>.+)</name>'
+
+    def _extract_title(self, content):
+        '''Extracts the title from the whole content.'''
+        match = re.search(self._title_pattern, content)
+        if not match:
+            return ""
+        return match.group("title")
+
+    def _extract_focus_content(self, content):
+        '''Extracts the interesting content.'''
+        content = re.sub(r'<.*?>', '', content)
+        return content
+
+    def _extract_doc_id(self, content):
+        '''Extracts the interesting content.'''
+        match = re.search(self._id_pattern, content)
+        if not match:
+            return ""
+        return int(match.group("id"))
+
+
+class CACMDocumentParser(DocumentParser):
+
+    '''Contains the CACM document parsing logic.'''
+
+    def __init__(self, file_path=""):
+        super().__init__(file_path)
+        self._fields = [r"\.I", r"\.T", r"\.W", r"\.K", r"\.B", r"\.A", r"\.N", r"\.X", r"\.K"]
+        self._focus_fields = [r"\.T", r"\.W", r"\.K"]
+        self._start_marker = r".I"
+        self._title_marker = r"\.T"
+
+    def _extract_title(self, content):
+        '''Extracts the title from the whole content.'''
         return self._extract_field(self._title_marker, content).strip()
 
     def _extract_doc_id(self, content):
         '''Extracts the doc id from the content.'''
-        return int(self._extract_field('\\' + self._id_marker, content))
+        return int(self._extract_field('\\' + self._start_marker, content))
 
     def _extract_focus_content(self, content):
         '''Extracts the interesting content.'''

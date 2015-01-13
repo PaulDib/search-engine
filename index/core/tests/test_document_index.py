@@ -1,6 +1,6 @@
 import unittest
 import os
-from ..document_index import DocumentIndex, StructuredDocument, PlainDocument, CACMDocumentParser
+from ..document_index import DocumentIndex, PlainDocument, CACMDocumentParser, INEXDocumentParser
 
 
 class DocumentIndexTests(unittest.TestCase):
@@ -8,8 +8,20 @@ class DocumentIndexTests(unittest.TestCase):
     def setUp(self):
         with open(os.path.dirname(os.path.realpath(__file__)) + "/test_data") as file:
             self.test_content = "\n".join(file.read().splitlines())
+        with open(os.path.dirname(os.path.realpath(__file__)) + "/test_data_inex.xml") as file:
+            self.test_inex = "\n".join(file.read().splitlines())
         self.doc = CACMDocumentParser().parse_document(self.test_content)
         self.doc_index = DocumentIndex(self.doc.get_content())
+
+    def test_get_doc_id_inex(self):
+        doc = INEXDocumentParser().parse_document(self.test_inex)
+        self.assertEqual(290, doc.get_doc_id())
+
+    def test_get_title_inex(self):
+        '''Tests the get_title function.'''
+        expected = "A"
+        doc = INEXDocumentParser().parse_document(self.test_inex)
+        self.assertEqual(expected, doc.get_title())
 
     def test_get_title(self):
         '''Tests the get_title function.'''
@@ -46,5 +58,5 @@ class DocumentIndexTests(unittest.TestCase):
 
     def test_plain_document_get_content(self):
         plain_text = "a b a"
-        plainDoc = PlainDocument(plain_text)
-        self.assertEqual(plain_text, plainDoc.get_content())
+        plain_doc = PlainDocument(plain_text)
+        self.assertEqual(plain_text, plain_doc.get_content())
