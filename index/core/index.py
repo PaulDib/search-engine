@@ -36,7 +36,7 @@ class Index:
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return INEXDocumentParser().parse_document(self._get_document_content(doc_id))
+        return CACMDocumentParser().parse_document(self._get_document_content(doc_id))
 
     def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
@@ -80,7 +80,7 @@ class Index:
 
     def _index_file(self, file_path):
         '''Populating the index with the results for one file.'''
-        parser = INEXDocumentParser(file_path)
+        parser = CACMDocumentParser(file_path)
         for (start_pos, end_pos, document) in parser.get_documents():
             self._save_document_location(document.get_doc_id(), file_path, start_pos, end_pos)
             self._add_document_to_index(document.get_doc_id(), document.get_content())
