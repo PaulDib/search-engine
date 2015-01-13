@@ -1,6 +1,7 @@
 import unittest
 import os
-from ..document_index import DocumentIndex, PlainDocument, CACMDocumentParser, INEXDocumentParser
+from ..document_index import DocumentIndex, PlainDocument
+from ..document_parser import CACMDocumentParser, INEXDocumentParser
 
 
 class DocumentIndexTests(unittest.TestCase):

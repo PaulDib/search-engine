@@ -3,7 +3,8 @@ Main entry point of the package.
 Provides the Index class that is able to index a collection
 of documents and can be used to query them.
 '''
-from .document_index import DocumentIndex, CACMDocumentParser, INEXDocumentParser
+from .document_index import DocumentIndex
+from .document_parser import CACMDocumentParser
 from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
 
@@ -14,7 +15,8 @@ class Index:
     Class containing the whole index: documents and the lists of frequencies
     '''
 
-    def __init__(self, data_files, stop_words_file="", stop_words=None):
+    def __init__(self, data_files, stop_words_file="", stop_words=None,
+                 parser_type=None):
         self._data_files = data_files
         if stop_words:
             self._stop_words = stop_words
@@ -22,6 +24,10 @@ class Index:
             self._read_stop_words(stop_words_file)
         else:
             self._stop_words = []
+        if parser_type:
+            self._parser_type = parser_type
+        else:
+            self._parser_type = CACMDocumentParser
         self._index = {}
         self._inverted_index = {}
         self._document_frequencies = {}
@@ -36,7 +42,9 @@ class Index:
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
-        return CACMDocumentParser().parse_document(self._get_document_content(doc_id))
+        return self._parser_type().parse_document(
+            self._get_document_content(doc_id)
+        )
 
     def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
@@ -80,10 +88,12 @@ class Index:
 
     def _index_file(self, file_path):
         '''Populating the index with the results for one file.'''
-        parser = CACMDocumentParser(file_path)
+        parser = self._parser_type(file_path)
         for (start_pos, end_pos, document) in parser.get_documents():
-            self._save_document_location(document.get_doc_id(), file_path, start_pos, end_pos)
-            self._add_document_to_index(document.get_doc_id(), document.get_content())
+            self._save_document_location(document.get_doc_id(), file_path,
+                                         start_pos, end_pos)
+            self._add_document_to_index(document.get_doc_id(),
+                                        document.get_content())
 
     def _save_document_location(self, doc_id, file, start_pos, end_pos):
         '''Saves the position of the document in its file for later reads.'''
