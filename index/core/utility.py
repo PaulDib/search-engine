@@ -17,8 +17,9 @@ def split_content(content):
     return re.findall(r"[\w]+", content)
 
 
-def merge_dictionaries(dict_a, dict_b, merging_func=lambda x, y: x + y):
+def merge_dictionaries(dict_a, dict_b="", merging_func=lambda x, y: x + y):
     '''Merge two dictionaries by summing values'''
+    #print(dict_a)
     res = dict_a
     for k in dict_b:
         if k in res:

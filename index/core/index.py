@@ -7,7 +7,8 @@ from .document_index import DocumentIndex
 from .document_parser import CACMDocumentParser
 from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
-
+from multiprocessing import Pool
+from functools import reduce
 
 class Index:
 
@@ -31,6 +32,7 @@ class Index:
         self._index = {}
         self._inverted_index = {}
         self._document_frequencies = {}
+        self._count = 0
         self._number_of_docs = len(self._index)
         self._init_index()
 
@@ -78,37 +80,49 @@ class Index:
     def _init_index(self):
         '''Initializes the index and inverted index.'''
         if isinstance(self._data_files, str):
-            self._index_file(self._data_files)
+            self._index_files_threading([self._data_files], 1)
         elif type(self._data_files) is list:
-            for file_path in self._data_files:
-                self._index_file(file_path)
+            self._index_files_threading(self._data_files, 8 )
         else:
             raise TypeError("dataFiles should be a string or a list")
         self._number_of_docs = len(self._index)
 
+    def _index_files_threading(self, data_files, nbr_threads):
+        if nbr_threads <= 1:
+            indexes = map(self._index_file, data_files)
+        else:
+            with Pool(nbr_threads) as pool:
+                indexes = pool.map(self._index_file, data_files)
+        self._index = reduce(lambda x, y: merge_dictionaries(x, y, merge_dictionaries), indexes, {})
+        self._inverted_index = {}
+        for (doc_id, doc_index) in self._index.items():
+            for (word, word_count) in doc_index[WORDS].items():
+                if not word in self._inverted_index:
+                    self._inverted_index[word] = {}
+                self._inverted_index[word][doc_id] = word_count
+
     def _index_file(self, file_path):
         '''Populating the index with the results for one file.'''
+        index = {}
         parser = self._parser_type(file_path)
         for (start_pos, end_pos, document) in parser.get_documents():
             self._save_document_location(document.get_doc_id(), file_path,
-                                         start_pos, end_pos)
+                                         start_pos, end_pos, index)
             self._add_document_to_index(document.get_doc_id(),
-                                        document.get_content())
+                                        document.get_content(), index)
+        return index
 
-    def _save_document_location(self, doc_id, file, start_pos, end_pos):
+    def _save_document_location(self, doc_id, file, start_pos, end_pos, index):
         '''Saves the position of the document in its file for later reads.'''
-        self._index[doc_id] = {FILE: file, START: start_pos, END: end_pos}
+        index[doc_id] = {FILE: file, START: start_pos, END: end_pos}
 
-    def _add_document_to_index(self, doc_id, content):
+    def _add_document_to_index(self, doc_id, content, index):
         '''Populating the index with the result for one document.'''
         word_count = DocumentIndex(content, self._stop_words).get_word_count()
-        self._index[doc_id][WORDS] = word_count
-        inverted_words = {
-            word: {doc_id: word_count[word]}
-            for word in word_count if word_count[word] > 0
-        }
-        self._inverted_index = merge_dictionaries(
-            self._inverted_index, inverted_words, merge_dictionaries)
+        index[doc_id][WORDS] = word_count
+        #
+        # self._inverted_index = merge_dictionaries(
+        #     self._inverted_index, inverted_words, merge_dictionaries)
 
     def _get_document_content(self, doc_id):
         '''Outputs the document content as a list of lines'''

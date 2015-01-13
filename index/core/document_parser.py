@@ -26,15 +26,17 @@ class DocumentParser(object):
         document_content = ""
         i = 0
         document_start_pos = 0
+        started = False
         for i, line in enumerate(self._file_ptr):
             if line.startswith(self._start_marker):
-                if document_content:
+                if document_content and started:
                     # Indexing previous document
                     doc = self.parse_document(document_content)
                     document_end_pos = i - 1
                     yield (document_start_pos, document_end_pos, doc)
                 document_start_pos = i
                 document_content = line
+                started = True
             document_content = document_content + "\n" + line
 
         # Handling last document.
