@@ -32,10 +32,10 @@ def get_word_list(content, stop_words):
     '''Gets the list of words in a string'''
     if not stop_words:
         stop_words = []
-    content = re.sub(r'[^\w\s]', ' ', content)
+    content = re.sub(r'[^\w\s]', ' ', content).lower()
     word_list = split_content(content)
-    word_list = [tokenize(x) for x in word_list]
     word_list = filter_words(word_list, stop_words)
+    word_list = [tokenize(x) for x in word_list]
     return word_list
 
 

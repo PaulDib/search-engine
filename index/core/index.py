@@ -73,7 +73,7 @@ class Index:
         if not stop_word_file:
             self._stop_words = []
         with open(stop_word_file) as file_ptr:
-            self._stop_words = [tokenize(x) for x in file_ptr.read().splitlines()]
+            self._stop_words = [x for x in file_ptr.read().splitlines()]
 
     def _init_index(self):
         '''Initializes the index and inverted index.'''

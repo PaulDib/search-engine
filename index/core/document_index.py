@@ -2,7 +2,6 @@
 Provides classes to index single documents.
 '''
 from .utility import get_word_list, count_tokens
-import re
 
 
 class StructuredDocument(object):
