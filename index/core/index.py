@@ -82,7 +82,7 @@ class Index:
         if isinstance(self._data_files, str):
             self._index_files_threading([self._data_files], 1)
         elif type(self._data_files) is list:
-            self._index_files_threading(self._data_files, 8 )
+            self._index_files_threading(self._data_files, 8)
         else:
             raise TypeError("dataFiles should be a string or a list")
         self._number_of_docs = len(self._index)

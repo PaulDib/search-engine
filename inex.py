@@ -3,7 +3,7 @@ from index.core import Index, IndexSerializer
 from index.core.document_parser import INEXDocumentParser
 import time
 
-file_paths = ['../inex2007/documents/' + x for x in os.listdir('../inex2007/documents/')]
+file_paths = ['../inex2007/train-parts/all_docs/' + x for x in os.listdir('../inex2007/train-parts/all_docs/')]
 print(len(file_paths))
 
 start_time = time.time()
