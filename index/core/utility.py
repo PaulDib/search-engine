@@ -19,13 +19,13 @@ def split_content(content):
 
 def merge_dictionaries(dict_a, dict_b="", merging_func=lambda x, y: x + y):
     '''Merge two dictionaries by summing values'''
-    #print(dict_a)
-    res = dict_a
-    for k in dict_b:
+    res = dict_a if len(dict_a) > len(dict_b) else dict_b
+    iterated = dict_b if len(dict_a) > len(dict_b) else dict_a
+    for k in iterated:
         if k in res:
-            res[k] = merging_func(res[k], dict_b[k])
+            res[k] = merging_func(res[k], iterated[k])
         else:
-            res[k] = dict_b[k]
+            res[k] = iterated[k]
     return res
 
 

@@ -9,6 +9,7 @@ from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
 from multiprocessing import Pool
 from functools import reduce
+import time
 
 class Index:
 
@@ -88,18 +89,24 @@ class Index:
         self._number_of_docs = len(self._index)
 
     def _index_files_threading(self, data_files, nbr_threads):
+        start_time = time.time()
         if nbr_threads <= 1:
             indexes = map(self._index_file, data_files)
         else:
-            with Pool(nbr_threads) as pool:
+            with Pool(nbr_threads) as pool:x
                 indexes = pool.map(self._index_file, data_files)
+        print("map ended in {0} seconds".format(time.time() - start_time))
+        start_time = time.time()
         self._index = reduce(lambda x, y: merge_dictionaries(x, y, merge_dictionaries), indexes, {})
+        print("reduce ended in {0} seconds".format(time.time() - start_time))
         self._inverted_index = {}
+        start_time = time.time()
         for (doc_id, doc_index) in self._index.items():
             for (word, word_count) in doc_index[WORDS].items():
                 if not word in self._inverted_index:
                     self._inverted_index[word] = {}
                 self._inverted_index[word][doc_id] = word_count
+        print("inversion ended in {0} seconds".format(time.time() - start_time))
 
     def _index_file(self, file_path):
         '''Populating the index with the results for one file.'''
