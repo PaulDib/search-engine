@@ -22,7 +22,7 @@ class DocumentParser(object):
         Generator.
         Iterates over all the documents in the file.
         '''
-        self._file_ptr = open(self._file_path, 'r')
+        self._file_ptr = open(self._file_path, 'r', encoding="utf8")
         document_content = ""
         i = 0
         document_start_pos = 0

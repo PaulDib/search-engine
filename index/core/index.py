@@ -9,6 +9,7 @@ from .utility import merge_dictionaries, tf_idf, tokenize
 from .constants import FILE, WORDS, START, END
 from multiprocessing import Pool
 from functools import reduce
+from pympler.asizeof import asizeof
 import time
 
 class Index:
@@ -30,9 +31,9 @@ class Index:
             self._parser_type = parser_type
         else:
             self._parser_type = CACMDocumentParser
-        self._index = {}
-        self._inverted_index = {}
-        self._document_frequencies = {}
+        self._dict = dict
+        self._index = self._dict()
+        self._inverted_index = self._dict()
         self._count = 0
         self._number_of_docs = len(self._index)
         self._init_index()
@@ -41,7 +42,7 @@ class Index:
         '''Returns a list of doc_ids containing the requested word.'''
         standardized_word = tokenize(word)
         return self._inverted_index[standardized_word] \
-            if standardized_word in self._inverted_index else {}
+            if standardized_word in self._inverted_index else self._dict()
 
     def document_by_id(self, doc_id):
         '''Returns a Document object for a requested doc id.'''
@@ -51,7 +52,7 @@ class Index:
 
     def index_by_doc_id(self, doc_id):
         '''Returns a dictionary of words with their frequency in a document'''
-        return self._index[doc_id] if doc_id in self._index else {}
+        return self._index[doc_id] if doc_id in self._index else self._dict()
 
     def get_all_doc_ids(self):
         '''Returns a list with all doc ids in the index'''
@@ -93,24 +94,28 @@ class Index:
         if nbr_threads <= 1:
             indexes = map(self._index_file, data_files)
         else:
-            with Pool(nbr_threads) as pool:x
+            with Pool(nbr_threads) as pool:
                 indexes = pool.map(self._index_file, data_files)
         print("map ended in {0} seconds".format(time.time() - start_time))
         start_time = time.time()
-        self._index = reduce(lambda x, y: merge_dictionaries(x, y, merge_dictionaries), indexes, {})
+        self._index = reduce(lambda x, y: merge_dictionaries(x, y, merge_dictionaries), indexes, self._dict())
         print("reduce ended in {0} seconds".format(time.time() - start_time))
-        self._inverted_index = {}
         start_time = time.time()
-        for (doc_id, doc_index) in self._index.items():
-            for (word, word_count) in doc_index[WORDS].items():
-                if not word in self._inverted_index:
-                    self._inverted_index[word] = {}
-                self._inverted_index[word][doc_id] = word_count
+        self._inverted_index = self._invert_index(self._index)
         print("inversion ended in {0} seconds".format(time.time() - start_time))
+
+    def _invert_index(self, index):
+        inverted_index = self._dict()
+        for (doc_id, doc_index) in index.items():
+            for (word, word_count) in doc_index[WORDS].items():
+                if not word in inverted_index:
+                    inverted_index[word] = self._dict()
+                inverted_index[word][doc_id] = word_count
+        return inverted_index
 
     def _index_file(self, file_path):
         '''Populating the index with the results for one file.'''
-        index = {}
+        index = self._dict()
         parser = self._parser_type(file_path)
         for (start_pos, end_pos, document) in parser.get_documents():
             self._save_document_location(document.get_doc_id(), file_path,
@@ -127,16 +132,13 @@ class Index:
         '''Populating the index with the result for one document.'''
         word_count = DocumentIndex(content, self._stop_words).get_word_count()
         index[doc_id][WORDS] = word_count
-        #
-        # self._inverted_index = merge_dictionaries(
-        #     self._inverted_index, inverted_words, merge_dictionaries)
 
     def _get_document_content(self, doc_id):
         '''Outputs the document content as a list of lines'''
         if doc_id in self._index:
             content = ""
             doc_info = self._index[doc_id]
-            with open(doc_info[FILE]) as file_ptr:
+            with open(doc_info[FILE], encoding="utf8") as file_ptr:
                 for i, line in enumerate(file_ptr):
                     if i >= doc_info[START] and i <= doc_info[END]:
                         content = content + "\n" + line

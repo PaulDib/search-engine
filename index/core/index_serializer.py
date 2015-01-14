@@ -19,7 +19,8 @@ class IndexSerializer(object):
         Save the index to the specified file.
         '''
         file_ptr = open(file_path, 'wb')
-        pickle.dump(index, file_ptr)
+        index._inverted_index = index._dict()
+        pickle.dump(index, file_ptr, protocol=4)
         file_ptr.close()
 
     @staticmethod
@@ -29,5 +30,6 @@ class IndexSerializer(object):
         '''
         file_ptr = open(file_path, 'rb')
         index = pickle.load(file_ptr)
+        index._inverted_index = index._invert_index(index._index)
         file_ptr.close()
         return index
