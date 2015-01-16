@@ -21,7 +21,7 @@ python repl.py
 ```
 
 ###Indexing INEX
-***This is a work in progress. Running `inex.py` on the whole INEX collection will certainly fail in a spectacular manner. You've been warned.***
+***This is a work in progress. Running `inex.py` on the whole INEX collection will certainly fail in a spectacular manner (memory and threads opera). You've been warned.***
 
 You must download the INEX 2007 collection and extract the archived files into a single folder (this folder must contain all the `.xml` documents). Edit the `inex.py` script to add the correct path to the corpus folder and run:
 
