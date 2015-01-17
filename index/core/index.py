@@ -93,7 +93,7 @@ class Index:
         if nbr_threads <= 1:
             indexes = map(self._index_file, data_files)
         else:
-            with Pool(nbr_threads) as pool:x
+            with Pool(nbr_threads) as pool:
                 indexes = pool.map(self._index_file, data_files)
         print("map ended in {0} seconds".format(time.time() - start_time))
         start_time = time.time()
