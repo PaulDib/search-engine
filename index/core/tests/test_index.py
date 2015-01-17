@@ -1,7 +1,6 @@
 import unittest
 import os
 from ..index import Index
-from ..constants import FILE, WORDS, START, END
 
 
 class IndexTests(unittest.TestCase):
@@ -13,20 +12,20 @@ class IndexTests(unittest.TestCase):
         '''
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data")
         expected = {
-            'subtract': {2:1},
-            'languag': {1:1, 2:1},
-            'extract': {2:1},
-            'of': {2:1},
-            'comput': {2:1},
-            'for': {2:1},
-            'algebra': {1:1},
-            'repeat': {2:1},
-            'digit': {2:1},
-            'preliminari': {1:2},
-            'report': {1:1},
-            'intern': {1:1},
-            'by': {2:1},
-            'root': {2:1}
+            'subtract': [2],
+            'languag': [1, 2],
+            'extract': [2],
+            'of': [2],
+            'comput': [2],
+            'for': [2],
+            'algebra': [1],
+            'repeat': [2],
+            'digit': [2],
+            'preliminari': [1],
+            'report': [1],
+            'intern': [1],
+            'by': [2],
+            'root': [2]
         }
         self.assertEqual(expected, index._inverted_index)
 
@@ -39,22 +38,22 @@ class IndexTests(unittest.TestCase):
             os.path.dirname(os.path.realpath(__file__)) + "/test_data",
             stop_words=['of', 'by', 'for'])
         expected = {
-         'subtract': {2:1},
-            'languag': {1:1, 2:1},
-            'extract': {2:1},
-            'comput': {2:1},
-            'algebra': {1:1},
-            'repeat': {2:1},
-            'digit': {2:1},
-            'preliminari': {1:2},
-            'report': {1:1},
-            'intern': {1:1},
-            'root': {2:1}
+         'subtract': [2],
+            'languag': [1,2],
+            'extract': [2],
+            'comput': [2],
+            'algebra': [1],
+            'repeat': [2],
+            'digit': [2],
+            'preliminari': [1],
+            'report': [1],
+            'intern': [1],
+            'root': [2]
         }
         self.assertEqual(expected, index._inverted_index)
 
     def test_search(self):
-        expected = {1:1, 2:1}
+        expected = [1, 2]
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data")
         self.assertEqual({}, index.search('thereShouldBeNoDocument'))
         self.assertEqual(expected, index.search('Language'))
@@ -63,17 +62,17 @@ class IndexTests(unittest.TestCase):
         data_path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "test_data")
         index = Index(data_path)
-        expected = {
-            END: 44,
-            FILE: data_path,
-            START: 0,
-            WORDS: {
+        expected = [
+            data_path,
+            0,
+            44,
+            {
                 'algebra': 1,
                 'intern': 1,
                 'languag': 1,
                 'preliminari': 2,
                 'report': 1
             }
-        }
+        ]
         self.assertEqual({}, index.index_by_doc_id(404))
         self.assertEqual(expected, index.index_by_doc_id(1))

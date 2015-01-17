@@ -50,7 +50,7 @@ class VectorialQuery(object):
             document = index.index_by_doc_id(doc_id)[WORDS]
             doc_vector = {
                 word:weighting_function(word, document, index)
-                for (word, count) in document.items()
+                for word in document
             }
             doc_norm = norm(doc_vector)
             result_dict[doc_id] = \

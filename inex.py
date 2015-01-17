@@ -7,7 +7,7 @@ from pympler.asizeof import asizeof
 
 if __name__ == '__main__':
     freeze_support()
-    file_paths = ['../inex2007/train_parts/documents/' + x for x in os.listdir('../inex2007/train_parts/documents/')]
+    file_paths = ['../inex2007/documents/all_docs/' + x for x in os.listdir('../inex2007/documents/all_docs/')]
     print(len(file_paths))
 
     start_time = time.time()

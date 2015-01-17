@@ -126,7 +126,7 @@ class Index:
 
     def _save_document_location(self, doc_id, file, start_pos, end_pos, index):
         '''Saves the position of the document in its file for later reads.'''
-        index[doc_id] = {FILE: file, START: start_pos, END: end_pos}
+        index[doc_id] = [file, start_pos, end_pos, {}]
 
     def _add_document_to_index(self, doc_id, content, index):
         '''Populating the index with the result for one document.'''

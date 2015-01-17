@@ -4,6 +4,7 @@ Provides general purpose functions.
 import re
 from math import log, sqrt
 from nltk import PorterStemmer
+from .dictionary_as_string import DictionaryAsString
 
 _stemmer = PorterStemmer()
 
@@ -52,7 +53,7 @@ def count_tokens(tokens):
     Given a list of elements, counts the number of occurences
     of each element as a dictionary.
     '''
-    result = {}
+    result = DictionaryAsString()
     for token in tokens:
         if token in result:
             result[token] = result[token] + 1

@@ -2,7 +2,7 @@
 Defines package constants.
 '''
 
-FILE = 'F'
-WORDS = 'W'
-START = 'S'
-END = 'E'
+FILE = 0
+START = 1
+END = 2
+WORDS = 3
