@@ -19,7 +19,7 @@ class IndexSerializer(object):
         Save the index to the specified file.
         '''
         file_ptr = open(file_path, 'wb')
-        index._inverted_index = index._dict()
+        index._inverted_index = []
         pickle.dump(index, file_ptr, protocol=4)
         file_ptr.close()
 

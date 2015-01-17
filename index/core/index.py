@@ -107,10 +107,10 @@ class Index:
     def _invert_index(self, index):
         inverted_index = self._dict()
         for (doc_id, doc_index) in index.items():
-            for (word, word_count) in doc_index[WORDS].items():
+            for word in doc_index[WORDS]:
                 if not word in inverted_index:
-                    inverted_index[word] = self._dict()
-                inverted_index[word][doc_id] = word_count
+                    inverted_index[word] = []
+                inverted_index[word].append(doc_id)
         return inverted_index
 
     def _index_file(self, file_path):
