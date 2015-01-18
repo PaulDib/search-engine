@@ -3,10 +3,8 @@ Provides general purpose functions.
 '''
 import re
 from math import log, sqrt
-from nltk import PorterStemmer
-from .dictionary_as_string import DictionaryAsString
+from .configuration import Configuration
 
-_stemmer = PorterStemmer()
 
 def filter_words(word_list, stop_words):
     '''Removes stop_words from word_list'''
@@ -45,7 +43,7 @@ def tokenize(word):
     '''
     Return the token corresponding to the input word.
     '''
-    return _stemmer.stem_word(word.lower())
+    return Configuration.stemmer.stem_word(word.lower())
 
 
 def count_tokens(tokens):
@@ -53,7 +51,7 @@ def count_tokens(tokens):
     Given a list of elements, counts the number of occurences
     of each element as a dictionary.
     '''
-    result = DictionaryAsString()
+    result = Configuration.IndexDict()
     for token in tokens:
         if token in result:
             result[token] = result[token] + 1

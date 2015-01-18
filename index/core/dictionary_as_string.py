@@ -38,12 +38,16 @@ class DictionaryAsString(object):
         return self._get_item_position(key) != -1
 
     def __iter__(self):
-        splitted = self._data.replace(DictionaryAsString.val_sep, DictionaryAsString.key_sep).split(DictionaryAsString.key_sep)
+        splitted = self._data \
+            .replace(DictionaryAsString.val_sep, DictionaryAsString.key_sep) \
+            .split(DictionaryAsString.key_sep)
         keys = [splitted[2*x+1] for x in range(0, int(len(splitted)/2))]
         return iter(keys)
 
     def values(self):
-        splitted = self._data.replace(DictionaryAsString.val_sep, DictionaryAsString.key_sep).split(DictionaryAsString.key_sep)
+        splitted = self._data \
+            .replace(DictionaryAsString.val_sep, DictionaryAsString.key_sep) \
+            .split(DictionaryAsString.key_sep)
         values = [int(splitted[2*x]) for x in range(1, int(len(splitted)/2))]
         return iter(values)
 
@@ -52,3 +56,4 @@ class DictionaryAsString(object):
             return self._data.index(DictionaryAsString.item_format.format(key, ""))
         except ValueError:
             return -1
+            

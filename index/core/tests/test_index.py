@@ -55,7 +55,7 @@ class IndexTests(unittest.TestCase):
     def test_search(self):
         expected = [1, 2]
         index = Index(os.path.dirname(os.path.realpath(__file__)) + "/test_data")
-        self.assertEqual({}, index.search('thereShouldBeNoDocument'))
+        self.assertEqual([], index.search('thereShouldBeNoDocument'))
         self.assertEqual(expected, index.search('Language'))
 
     def test_index_by_doc_id(self):

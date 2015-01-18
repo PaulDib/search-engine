@@ -3,7 +3,7 @@ Provides document the general document parser structure
 along with parsers for different types of documents.
 '''
 import re
-from .document_index import StructuredDocument
+
 
 class DocumentParser(object):
 
@@ -136,3 +136,41 @@ class CACMDocumentParser(DocumentParser):
         if not match:
             return ""
         return match.group('extracted')
+
+
+class StructuredDocument(object):
+
+    '''
+    Class representing one structured document for read access.
+    '''
+
+    def __init__(self, doc_id, title, content):
+        self._doc_id = doc_id
+        self._title = title
+        self._content = content
+
+    def get_content(self):
+        '''Returns the indexed content of the document.'''
+        return self._content
+
+    def get_title(self):
+        '''Returns the field that was marked as title of the document.'''
+        return self._title
+
+    def get_doc_id(self):
+        '''Returns the doc id of the document.'''
+        return self._doc_id
+
+
+class PlainDocument(object):
+
+    '''
+    Class representing a plain text (non structured) document for read access.
+    '''
+
+    def __init__(self, content):
+        self._content = content
+
+    def get_content(self):
+        '''Returns the whole content of the document.'''
+        return self._content
