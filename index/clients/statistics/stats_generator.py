@@ -150,31 +150,24 @@ class RecallPrecisionGenerator(object):
         Generates (recall_list, prec_list) that give the results of
         several computations averaged over all the test requests.
         '''
-        average_prec_list = []
-        average_recall_list = []
+        recalls = [x/10 for x in range(0, 11)]
+        prec_average = [[] for x in range(0, 11)]
+        for query_id in self._queries:
+            recall_prec_list = []
+            for percentage in range(1, 100):
+                recall_prec_list.append(self._compute_recall_and_precision(query_id, percentage*0.001))
+            for percentage in range(1, 100):
+                recall_prec_list.append(self._compute_recall_and_precision(query_id, percentage))
+            for idx in range(0, 11):
+                precisions_for_recall = [prec for (recall, prec) in recall_prec_list if recalls[idx] <= recall ]
+                if precisions_for_recall:
+                    prec_average[idx].append(max(precisions_for_recall))
+        prec_average = [sum(l)/len(l) for l in prec_average]
+        return (recalls, prec_average)
 
-        for part in range(1, 3):
-            if part == 1:
-                offset = 0
-                multip = 0.05
-            else:
-                offset = 5
-                multip = 1
-            for percentage in range(1, iterations):
-                average_prec = 0
-                average_recall = 0
-                perc = percentage / iterations * 100 * multip + offset
-                for (query_id, _) in self._queries.items():
-                    (recall, prec) = self._compute_recall_and_precision(query_id, perc)
-                    average_recall = average_recall + recall
-                    average_prec = average_prec + prec
-                average_recall = average_recall / len(self._queries)
-                average_prec = average_prec / len(self._queries)
-                average_recall_list.append(average_recall)
-                average_prec_list.append(average_prec)
 
-        return (average_recall_list, average_prec_list)
 
+        
     def _compute_recall_and_precision(self, query_id, percentage):
         '''
         Computes recall and precision for a single query.
