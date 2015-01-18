@@ -10,7 +10,3 @@ generator.set_iterations(100)
 
 # Start computation
 generator.compute_statistics()
-
-
-
-
