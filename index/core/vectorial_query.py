@@ -1,5 +1,5 @@
 '''
-Represents a vectorial query using tf-idf.
+Provides classes to execute vectorial and probabilistic queries.
 '''
 from .constants import WORDS
 from .document_index import DocumentIndex

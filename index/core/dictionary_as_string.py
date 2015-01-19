@@ -1,6 +1,14 @@
-import re
+'''
+Provides a dictionary stored as a string.
+'''
+
 
 class DictionaryAsString(object):
+
+    '''
+    Light weight dictionary that stores string keys with integer values.
+    '''
+
     key_sep = "."
     val_sep = "-"
     item_format = key_sep + "{0}" + val_sep + "{1}"
@@ -45,6 +53,9 @@ class DictionaryAsString(object):
         return iter(keys)
 
     def values(self):
+        '''
+        Returns the list of values in the dictionary.
+        '''
         splitted = self._data \
             .replace(DictionaryAsString.val_sep, DictionaryAsString.key_sep) \
             .split(DictionaryAsString.key_sep)
@@ -52,6 +63,10 @@ class DictionaryAsString(object):
         return iter(values)
 
     def _get_item_position(self, key):
+        '''
+        Gets the position of an item in the data string.
+        Returns -1 if the key was not found.
+        '''
         try:
             return self._data.index(DictionaryAsString.item_format.format(key, ""))
         except ValueError:
