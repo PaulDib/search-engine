@@ -6,6 +6,9 @@ from .document_parser import CACMDocumentParser
 
 
 class FakeStemmer:
+
+    '''No-op stemmer placeholder.'''
+
     def __init__(self):
         pass
 
