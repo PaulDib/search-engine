@@ -10,8 +10,10 @@ The project uses several external packages:
 - nltk
 - pyparsing
 - matplotlib
+
 You can retrieve them using `pip install --user package-name`. (Make sure you're running `pip` for Python 3)
-`Matplotlib` is likely to cause troubles installing via `pip`, you may want to refer to the (Matplotlib installing FAQ)[http://matplotlib.org/faq/installing_faq.html].
+
+`Matplotlib` is likely to cause troubles installing via `pip`, you may want to refer to the [Matplotlib installing FAQ](http://matplotlib.org/faq/installing_faq.html).
 
 ##Tests
 The tests can be run using `nosetests3`. Simply type `nosetests3` at the root of the repository.
