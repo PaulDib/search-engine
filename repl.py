@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 Start REPL for index module.
 '''

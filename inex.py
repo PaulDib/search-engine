@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import time
 from multiprocessing import freeze_support

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from index.clients.statistics import StatsGenerator
 
 generator = StatsGenerator()
