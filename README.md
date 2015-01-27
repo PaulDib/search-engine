@@ -10,6 +10,8 @@ The project uses several external packages:
 - nltk
 - pyparsing
 - matplotlib
+- pympler
+
 
 You can retrieve them using `pip install --user package-name`. (Make sure you're running `pip` for Python 3)
 
