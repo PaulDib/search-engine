@@ -36,7 +36,7 @@ python repl.py
 ```
 
 ###Indexing INEX
-***This operation WILL take a long time (more than one hour, depending on the number of processes) and will use a huge amount of RAM (2.70 Go).***
+***This operation WILL take a long time (more than one hour, depending on the number of processes) and will use a huge amount of RAM.***
 
 You must download the INEX 2007 collection and extract the archived files into a single folder (this folder must contain all the `.xml` documents). Edit the `inex.py` script to add the correct path to the corpus folder and run:
 
